@@ -1,0 +1,17 @@
+/**
+ * The simplest Stop file.
+ *
+ * This system satisfies the minimum requirement of at least one start and stopping state.
+ * There is one transition from the starting Hello state to the stopping state of Say.
+ * The Hello state would require an implementation that would transition only to the Say state with the correct
+ * arguments (in this case a single field of type string called words).
+ */
+
+start Hello {
+    string whom
+    -> Say
+}
+
+stop Say {
+    string words
+}

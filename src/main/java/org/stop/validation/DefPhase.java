@@ -1,0 +1,109 @@
+package org.stop.validation;
+
+import org.antlr.symtab.GlobalScope;
+import org.antlr.symtab.LocalScope;
+import org.antlr.symtab.Scope;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
+import org.stop.parser.StopBaseListener;
+import org.stop.parser.StopParser;
+import org.stop.symbols.*;
+
+public class DefPhase extends StopBaseListener {
+    public ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
+    public GlobalScope globals;
+    public Scope currentScope;
+
+    @Override public void enterFile(StopParser.FileContext ctx) {
+        globals = new GlobalScope(null);
+        currentScope = globals;
+    }
+
+    @Override public void exitFile(StopParser.FileContext ctx) {
+
+    }
+
+    @Override public void enterModel(StopParser.ModelContext ctx) {
+        ModelSymbol modelSymbol = new ModelSymbol(ctx, currentScope);
+        currentScope.define(modelSymbol);
+        saveScope(ctx, modelSymbol);
+        currentScope = modelSymbol;
+    }
+
+    @Override public void exitModel(StopParser.ModelContext ctx) {
+        currentScope = currentScope.getEnclosingScope();
+    }
+
+    @Override public void enterBlock(StopParser.BlockContext ctx) {
+        LocalScope block = new LocalScope(currentScope);
+        saveScope(ctx, block);
+        currentScope = block;
+    }
+
+    @Override public void exitBlock(StopParser.BlockContext ctx) {
+        currentScope = currentScope.getEnclosingScope();
+    }
+
+    @Override public void enterEnumeration(StopParser.EnumerationContext ctx) {
+        EnumSymbol enumSymbol = new EnumSymbol(ctx, currentScope);
+        currentScope.define(enumSymbol);
+        saveScope(ctx, enumSymbol);
+        currentScope = enumSymbol;
+    }
+
+    @Override public void exitEnumeration(StopParser.EnumerationContext ctx) {
+        currentScope = currentScope.getEnclosingScope();
+    }
+
+    @Override public void exitEnum_value(StopParser.Enum_valueContext ctx) {
+        String enumValue = ctx.ENUM_VALUE().getText();
+        if (currentScope instanceof EnumSymbol){
+            EnumSymbol enumSymbol = (EnumSymbol)currentScope;
+            enumSymbol.addValue(enumValue);
+        }
+    }
+
+    @Override public void exitField(StopParser.FieldContext ctx) {
+        String fieldName = ctx.ID().getText();
+        StopFieldSymbol field = null;
+        if (ctx.type() != null && ctx.type().model_type() != null) {
+            String modelName = ctx.type().model_type().getText();
+            field = new ModelFieldSymbol(fieldName, modelName);
+        }else if (ctx.type()!=null && ctx.type().scalar_type() != null){
+            String typeName = ctx.type().scalar_type().getText();
+            field = new ScalarFieldSymbol(fieldName, typeName);
+        }else if (ctx.collection() != null && ctx.collection().type() != null){
+            String typeName = ctx.collection().type().getText();
+            field = new CollectionFieldSymbol(fieldName, typeName);
+        }
+        if(field != null){
+            if (ctx.async_source() != null){
+                String asyncModel = ctx.async_source().MODEL_TYPE().getText();
+                field.setAsyncSource(asyncModel);
+            }
+            currentScope.define(field);
+        }
+    }
+
+    @Override public void exitTimeout(StopParser.TimeoutContext ctx) {
+        OptionSymbol option = new OptionSymbol(ctx.start.getText(), ctx.NUMBER().getText());
+        currentScope.define(option);
+    }
+
+    @Override public void exitTransition(StopParser.TransitionContext ctx) {
+        String modelName = ctx.MODEL_TYPE().getText();
+        TransitionSymbol transitionSymbol = new TransitionSymbol(modelName, currentScope);
+        currentScope.define(transitionSymbol);
+    }
+
+    @Override public void exitThrow_parameter(StopParser.Throw_parameterContext ctx) {
+        if (currentScope instanceof  ModelSymbol){
+            ModelSymbol modelSymbol = (ModelSymbol)currentScope;
+            modelSymbol.addErrorType(ctx.MODEL_TYPE().getText());
+        }
+    }
+
+    void saveScope(ParserRuleContext ctx, Scope s){
+        scopes.put(ctx, s);
+    }
+}

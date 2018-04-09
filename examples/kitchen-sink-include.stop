@@ -1,0 +1,13 @@
+/**
+ * A file to prove includes work.
+ */
+
+Parameter {
+    string name
+    string value
+}
+
+Header {
+    string name
+    string value
+}

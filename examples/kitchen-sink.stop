@@ -32,10 +32,11 @@ start Router {
     -> Authenticate
     -> Dashboard
     -> Profile
+    -> CreatePost
 }
 
 User {
-    sint64 id
+    uint64 id
     string email
     string username
 }
@@ -48,7 +49,7 @@ UserNotFoundError {
 async GetUserWithPassword <- User throws UserNotFoundError {
     string login
     string password
-    timeout 5
+    timeout 5 -> TimeoutError
 }
 
 Post {
@@ -58,8 +59,8 @@ Post {
 }
 
 async GetUserPosts <- [Post] throws UserNotFoundError {
-    sint64 user_id
-    timeout 5
+    uint64 user_id
+    timeout 5 -> TimeoutError
 }
 
 FilterPublicPosts <- [Post] {
@@ -78,16 +79,22 @@ Authenticate {
 }
 
 Dashboard {
-    sint64 user_id
+    uint64 user_id
     [Post] posts <- GetUserPosts
     -> Render
 }
 
 Profile {
-    sint64 user_id
+    uint64 user_id
     [Post] posts <- GetUserPosts
     [Post] publicPosts <- FilterPublicPosts
     -> Render
+}
+
+async CreatePost {
+    Post post
+    timeout 30 -> TimeoutError
+    -> Response
 }
 
 Render {
@@ -100,9 +107,13 @@ Redirect {
     -> Response
 }
 
+TimeoutError {
+    -> Response
+}
+
 stop Response {
     string content_type
     string content
-    sint32 status
+    uint32 status
     [Header] headers
 }

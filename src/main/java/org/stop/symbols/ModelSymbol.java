@@ -13,6 +13,7 @@ public class ModelSymbol extends SymbolWithScope {
     private String asyncReturnType = null;
     private List<String> errorTypes = new ArrayList<String>();
     private List<String> transitions = new ArrayList<String>();
+    public int timeout = 0;
 
     public ModelSymbol(StopParser.ModelContext ctx, Scope enclosingScope){
         super(ctx.MODEL_TYPE().getText());

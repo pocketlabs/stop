@@ -11,6 +11,7 @@ include
 model
    : START? MODEL_TYPE (throw_type)? block
    | STOP? MODEL_TYPE (throw_type)? block
+   | ASYNC MODEL_TYPE (throw_type)? block_with_timeout
    | ASYNC MODEL_TYPE RETURN_OP return_type (throw_type)? return_block_with_timeout
    | MODEL_TYPE RETURN_OP return_type (throw_type)? return_block
    ;
@@ -21,6 +22,14 @@ block
 
 statement
    : enumeration | field | transition
+   ;
+
+block_with_timeout
+   : '{' ( block_with_timeout_statement ';'? )* '}'
+   ;
+
+block_with_timeout_statement
+   : enumeration | field | transition | timeout
    ;
 
 return_block
@@ -87,7 +96,7 @@ throw_parameter
     : MODEL_TYPE
     ;
 
-timeout: 'timeout' NUMBER;
+timeout: 'timeout' NUMBER transition;
 
 transition: TRANSITION_OP MODEL_TYPE;
 

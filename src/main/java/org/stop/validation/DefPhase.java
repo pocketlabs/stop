@@ -9,10 +9,14 @@ import org.stop.parser.StopBaseListener;
 import org.stop.parser.StopParser;
 import org.stop.symbols.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DefPhase extends StopBaseListener {
     public ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
     public GlobalScope globals;
     public Scope currentScope;
+    public List<Exception> errors = new ArrayList<Exception>();
 
     @Override public void enterFile(StopParser.FileContext ctx) {
         globals = new GlobalScope(null);
@@ -31,7 +35,23 @@ public class DefPhase extends StopBaseListener {
     }
 
     @Override public void exitModel(StopParser.ModelContext ctx) {
+        ModelSymbol modelSymbol = (ModelSymbol) currentScope;
+        if (modelSymbol.getAsync() && (modelSymbol.timeout == 0)){
+            modelSymbol.addErrorType("Asynchronous states must have a timeout defined");
+            errors.add(new ValidationException("Asynchronous states " + modelSymbol.getName() + " must have a timeout defined"));
+        }
         currentScope = currentScope.getEnclosingScope();
+    }
+
+    @Override public void exitTimeout(StopParser.TimeoutContext ctx){
+        ModelSymbol modelSymbol = (ModelSymbol) currentScope;
+        String numberString = ctx.NUMBER().getText();
+        int timeout = Integer.parseInt(numberString);
+        if (modelSymbol.timeout > 0){
+            errors.add(new ValidationException("Timeout already defined for " + modelSymbol.getName()));
+        }else {
+            modelSymbol.timeout = timeout;
+        }
     }
 
     @Override public void enterBlock(StopParser.BlockContext ctx) {
@@ -83,11 +103,6 @@ public class DefPhase extends StopBaseListener {
             }
             currentScope.define(field);
         }
-    }
-
-    @Override public void exitTimeout(StopParser.TimeoutContext ctx) {
-        OptionSymbol option = new OptionSymbol(ctx.start.getText(), ctx.NUMBER().getText());
-        currentScope.define(option);
     }
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {

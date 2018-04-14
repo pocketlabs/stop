@@ -44,10 +44,15 @@ public class TransitionPhase extends StopBaseListener {
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
         String modelName = ctx.MODEL_TYPE().getText();
-        ModelSymbol modelSymbol = (ModelSymbol)currentScope.getEnclosingScope();
+        ModelSymbol modelSymbol = null;
+        if (currentScope instanceof ModelSymbol){
+            modelSymbol = (ModelSymbol)currentScope;
+        }else if (currentScope.getEnclosingScope() instanceof ModelSymbol){
+            modelSymbol = (ModelSymbol)currentScope.getEnclosingScope();
+        }
 
         Symbol symbol = globals.resolve(modelName);
-        if(symbol != null) {
+        if(modelSymbol != null && symbol != null) {
             if (symbol instanceof ModelSymbol){
                 modelSymbol.addTransition(modelName);
             }

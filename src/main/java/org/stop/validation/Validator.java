@@ -36,6 +36,10 @@ public class Validator {
         DefPhase def = new DefPhase();
         walker.walk(def, tree);
 
+        if (handleErrors(def.errors) ){
+            return false;
+        }
+
         RefPhase ref = new RefPhase(def.globals, def.scopes);
         walker.walk(ref, tree);
 

@@ -75,7 +75,7 @@ public class DefPhase extends StopBaseListener {
     }
 
     @Override public void exitEnum_value(StopParser.Enum_valueContext ctx) {
-        String enumValue = ctx.ENUM_VALUE().getText();
+        String enumValue = ctx.MODEL_TYPE().getText();
         if (currentScope instanceof EnumSymbol){
             EnumSymbol enumSymbol = (EnumSymbol)currentScope;
             enumSymbol.addValue(enumValue);

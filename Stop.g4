@@ -61,7 +61,7 @@ enum_type
     ;
 
 enum_value
-    : ENUM_VALUE
+    : MODEL_TYPE
     ;
 
 enumeration
@@ -116,17 +116,15 @@ NUMBER
    : '-'? ( '.' DIGIT+ | DIGIT+ ( '.' DIGIT* )? )
    ;
 
-ID
-   : LOWERCASE_LETTER ( LETTER | DIGIT )*
-   ;
-
 MODEL_TYPE
    : UPPERCASE_LETTER  ( LETTER | DIGIT )*
    ;
 
-ENUM_VALUE
-   : UPPERCASE_LETTER (UPPERCASE_LETTER)+
+ID
+   : LOWERCASE_LETTER ( LETTER | DIGIT )*
    ;
+
+
 
 FILENAME
     : (LETTER | DIGIT | '.' | '\\' | '/' | '-' | '_')+

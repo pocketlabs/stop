@@ -34,19 +34,15 @@ public class TransitionPhase extends StopBaseListener {
         currentScope = currentScope.getEnclosingScope();
     }
 
-    @Override public void enterBlock(StopParser.BlockContext ctx) {
-        currentScope = scopes.get(ctx);
-    }
-
-    @Override public void exitBlock(StopParser.BlockContext ctx) {
-        currentScope = currentScope.getEnclosingScope();
-    }
-
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
         String modelName = ctx.MODEL_TYPE().getText();
         ModelSymbol modelSymbol = null;
         if (currentScope instanceof ModelSymbol){
-            modelSymbol = (ModelSymbol)currentScope;
+            if (ctx.getParent() instanceof StopParser.TimeoutContext){
+                return;
+            }else {
+                modelSymbol = (ModelSymbol) currentScope;
+            }
         }else if (currentScope.getEnclosingScope() instanceof ModelSymbol){
             modelSymbol = (ModelSymbol)currentScope.getEnclosingScope();
         }
@@ -68,7 +64,7 @@ public class TransitionPhase extends StopBaseListener {
         Symbol symbol = globals.resolve(modelName);
         if(symbol != null) {
             if (symbol instanceof ModelSymbol){
-                modelSymbol.addTransition(modelName);
+                modelSymbol.addErrorType(modelName);
             }
         }else{
             errors.add(new ValidationException("Couldn't define thrown transition because " + modelName + " isn't defined"));

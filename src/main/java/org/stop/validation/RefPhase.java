@@ -37,14 +37,6 @@ public class RefPhase extends StopBaseListener {
         currentScope = currentScope.getEnclosingScope();
     }
 
-    @Override public void enterBlock(StopParser.BlockContext ctx) {
-        currentScope = scopes.get(ctx);
-    }
-
-    @Override public void exitBlock(StopParser.BlockContext ctx) {
-        currentScope = currentScope.getEnclosingScope();
-    }
-
     @Override public void exitField(StopParser.FieldContext ctx) {
         String name = ctx.ID().getSymbol().getText();
         Symbol symbol = currentScope.resolve(name);

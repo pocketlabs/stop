@@ -1,7 +1,6 @@
 package org.stop.validation;
 
 import org.antlr.symtab.GlobalScope;
-import org.antlr.symtab.LocalScope;
 import org.antlr.symtab.Scope;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
@@ -45,22 +44,16 @@ public class DefPhase extends StopBaseListener {
     @Override public void exitTimeout(StopParser.TimeoutContext ctx){
         ModelSymbol modelSymbol = (ModelSymbol) currentScope;
         String numberString = ctx.NUMBER().getText();
+        String modelTransitionName = ctx.transition().MODEL_TYPE().getText();
+        modelSymbol.setTimeoutTransition(modelTransitionName);
         int timeout = Integer.parseInt(numberString);
-        if (modelSymbol.timeout > 0){
+        if(timeout == 0){
+            errors.add(new ValidationException("Timeout must be greater than zero for " + modelSymbol.getName()));
+        }else if (modelSymbol.timeout > 0){
             errors.add(new ValidationException("Timeout already defined for " + modelSymbol.getName()));
         }else {
             modelSymbol.timeout = timeout;
         }
-    }
-
-    @Override public void enterBlock(StopParser.BlockContext ctx) {
-        LocalScope block = new LocalScope(currentScope);
-        saveScope(ctx, block);
-        currentScope = block;
-    }
-
-    @Override public void exitBlock(StopParser.BlockContext ctx) {
-        currentScope = currentScope.getEnclosingScope();
     }
 
     @Override public void enterEnumeration(StopParser.EnumerationContext ctx) {
@@ -93,7 +86,8 @@ public class DefPhase extends StopBaseListener {
             field = new ScalarFieldSymbol(fieldName, typeName);
         }else if (ctx.collection() != null && ctx.collection().type() != null){
             String typeName = ctx.collection().type().getText();
-            field = new CollectionFieldSymbol(fieldName, typeName);
+            boolean isState = ctx.collection().type().model_type() != null;
+            field = new CollectionFieldSymbol(fieldName, typeName, isState);
         }
         if(field != null){
             if (ctx.async_source() != null){

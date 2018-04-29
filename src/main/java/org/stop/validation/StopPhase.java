@@ -34,14 +34,6 @@ public class StopPhase extends StopBaseListener {
         currentScope = currentScope.getEnclosingScope();
     }
 
-    @Override public void enterBlock(StopParser.BlockContext ctx) {
-        currentScope = scopes.get(ctx);
-    }
-
-    @Override public void exitBlock(StopParser.BlockContext ctx) {
-        currentScope = currentScope.getEnclosingScope();
-    }
-
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
         String modelName = ctx.MODEL_TYPE().getText();
         Symbol symbol = globals.resolve(modelName);
@@ -64,13 +56,19 @@ public class StopPhase extends StopBaseListener {
             return true;
         }
 
+        List<String> transitions = modelSymbol.getTransitions();
+        transitions.addAll(modelSymbol.getErrorTypes());
+        if(modelSymbol.getTimeoutTransition()!=null){
+            transitions.add(modelSymbol.getTimeoutTransition());
+        }
+
         if (modelSymbol.getTransitions().isEmpty()){
             return false;
         }
 
         boolean foundStop = true;
 
-        for (String transition : modelSymbol.getTransitions()){
+        for (String transition : transitions){
             Symbol symbol = globals.resolve(transition);
             if(symbol != null) {
                 if (symbol instanceof ModelSymbol){

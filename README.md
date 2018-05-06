@@ -6,7 +6,7 @@ In order to build Stop from source you will need to check out this repository an
 
 Once antlr4 is installed run the following command to generate the Java lexer and parser:
   
-`antlr4 -o ./src/main/java/org/stop/parser -package org.stop.parser -listener -no-visitor Stop.g4`
+`antlr4 -o ./src/main/java/org/stop_lang/parser -package org.stop_lang.parser -listener -no-visitor Stop.g4`
 
 ## Examples
 There are a few examples in the examples directory.  Hello world defines the simplest possible Stop file.  Kitchen sink demonstrates all of the language features.

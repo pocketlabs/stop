@@ -11,16 +11,16 @@ public class ProtocolBuffers {
     public ProtocolBuffers(){}
 
     public String generate(CharStream input) throws IOException {
-        App app = Validator.getApp(input);
+        Stop stop = Validator.getStop(input);
 
-        if (app == null){
+        if (stop == null){
             throw new IOException("Invalid stop_lang file");
         }
 
         StringBuilder sb = new StringBuilder();
         sb.append("syntax = \"proto3\";\n\n");
 
-        for (State state : app.getStates().values()){
+        for (State state : stop.getStates().values()){
             sb.append("message " + state.getName() + " {\n");
             int index = 1;
             for (Enumeration enumeration : state.getEnumerations().values()){

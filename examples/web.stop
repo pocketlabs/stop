@@ -1,0 +1,40 @@
+Parameter {
+    string name
+    string value
+}
+
+Header {
+    string name
+    string value
+}
+
+Request {
+    enum Method {
+        GET
+        POST
+        PUT
+        DELETE
+        OPTIONS
+    }
+    Method method
+    string path
+    string body
+    [Header] headers
+    [Parameter] parameters
+}
+
+start Router {
+    Request request
+    -> Hello
+}
+
+Hello {
+    -> Response
+}
+
+stop Response {
+    string content_type
+    string content
+    uint32 status
+    [Header] headers
+}

@@ -14,7 +14,7 @@ public class EnumerationProperty extends Property {
 
     @Override
     protected Class getClassForPropertyType(Property.PropertyType propertyType){
-        return Enumeration.class;
+        return EnumerationInstance.class;
     }
 }
 

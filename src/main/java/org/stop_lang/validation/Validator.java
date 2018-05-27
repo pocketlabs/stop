@@ -19,11 +19,16 @@ public class Validator {
     }
 
     public static boolean validate(CharStream input) {
-        App app = getApp(input);
-        return app != null;
+        Stop stop = getStop(input);
+        return stop != null;
     }
 
-    public static App getApp(CharStream input) {
+    public static Stop getStop(String filename) throws IOException {
+        CharStream input = CharStreams.fromFileName(filename);
+        return getStop(input);
+    }
+
+    public static Stop getStop(CharStream input) {
         StopLexer l = new StopLexer(input);
         TokenStream tokens = new CommonTokenStream(l);
         StopParser parser = new StopParser(tokens);
@@ -194,7 +199,7 @@ public class Validator {
             }
         }
 
-        App app = new App(states);
+        Stop app = new Stop(states);
 
         return app;
     }

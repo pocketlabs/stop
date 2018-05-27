@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class App {
+public class Stop {
     private Map<String, State> states;
 
-    public App(TreeMap<String, State> states){
+    public Stop(TreeMap<String, State> states){
         this.states = states;
     }
 

@@ -14,6 +14,6 @@ public class StateProperty extends Property {
 
     @Override
     protected Class getClassForPropertyType(Property.PropertyType propertyType){
-        return State.class;
+        return StateInstance.class;
     }
 }

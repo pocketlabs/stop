@@ -32,6 +32,10 @@ public class State {
         this.type = type;
     }
 
+    public StateInstance buildInstance(Map<String, Object> properties) throws Exception{
+        return new StateInstance(this, properties);
+    }
+
     public String getName(){
         return this.name;
     }

@@ -1,4 +1,4 @@
-// Generated from Stop.g4 by ANTLR 4.7.1
+// Generated from /Users/kyleshank/git/stop/Stop.g4 by ANTLR 4.7
 package org.stop_lang.parser;
 
 import org.antlr.v4.runtime.ParserRuleContext;

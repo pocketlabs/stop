@@ -17,11 +17,23 @@ public class StateInstance {
         return this.state;
     }
 
+    public Object getProperty(String name){
+        return properties.get(name);
+    }
+
+    public Map<String, Object> getProperties() {
+        return this.properties;
+    }
+
     private void validateProperties() throws Exception {
         Map<String, Property> stateProperties = this.state.getProperties();
         for (Map.Entry<String, Property> entry : stateProperties.entrySet()){
             if (!properties.containsKey(entry.getKey())){
-                throw new Exception("Property not found: " + entry.getKey());
+                if (entry.getValue().isOptional()){
+                    continue;
+                }else {
+                    throw new Exception("Property not found: " + entry.getKey());
+                }
             }
             String propertyName = entry.getKey();
             Property property = entry.getValue();

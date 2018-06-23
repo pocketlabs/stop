@@ -5,6 +5,7 @@ import org.antlr.symtab.FieldSymbol;
 public class StopFieldSymbol extends FieldSymbol {
     private String typeName;
     private String asyncSource;
+    private boolean optional = false;
 
     public StopFieldSymbol(String name, String typeName){
         super(name);
@@ -21,5 +22,13 @@ public class StopFieldSymbol extends FieldSymbol {
 
     public String getAsyncSource() {
         return this.asyncSource;
+    }
+
+    public void setOptional(boolean optional){
+        this.optional = optional;
+    }
+
+    public boolean isOptional(){
+        return this.optional;
     }
 }

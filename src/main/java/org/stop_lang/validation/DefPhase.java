@@ -94,6 +94,9 @@ public class DefPhase extends StopBaseListener {
                 String asyncModel = ctx.async_source().MODEL_TYPE().getText();
                 field.setAsyncSource(asyncModel);
             }
+            if ( ctx.OPTIONAL() != null){
+                field.setOptional(true);
+            }
             currentScope.define(field);
         }
     }

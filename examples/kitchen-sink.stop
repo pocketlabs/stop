@@ -21,7 +21,7 @@ Request {
     }
     Method method
     string path
-    string body
+    optional string body
     [Header] headers
     [Parameter] parameters
 }

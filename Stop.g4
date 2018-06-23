@@ -69,8 +69,8 @@ enumeration
     ;
 
 field
-	: type ID (async_source)?
-	| collection ID (async_source)?
+	: OPTIONAL? type ID (async_source)?
+	| OPTIONAL? collection ID (async_source)?
 	;
 
 async_source
@@ -111,6 +111,8 @@ STOP : 'stop';
 TRANSITION_OP : '->';
 
 RETURN_OP : '<-';
+
+OPTIONAL : 'optional';
 
 NUMBER
    : '-'? ( '.' DIGIT+ | DIGIT+ ( '.' DIGIT* )? )

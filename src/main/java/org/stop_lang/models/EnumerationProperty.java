@@ -3,8 +3,8 @@ package org.stop_lang.models;
 public class EnumerationProperty extends Property {
     protected Enumeration enumeration;
 
-    public EnumerationProperty(String name, Enumeration enumeration, boolean collection, State provider){
-        super(name, PropertyType.ENUM, collection, provider);
+    public EnumerationProperty(String name, Enumeration enumeration, boolean collection, State provider, boolean optional){
+        super(name, PropertyType.ENUM, collection, provider, optional);
         this.enumeration = enumeration;
     }
 

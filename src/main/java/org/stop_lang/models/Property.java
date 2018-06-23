@@ -27,12 +27,14 @@ public class Property {
     protected PropertyType type;
     protected State provider;
     protected boolean collection;
+    protected boolean optional;
 
-    public Property(String name, PropertyType type, boolean collection, State provider){
+    public Property(String name, PropertyType type, boolean collection, State provider, boolean optional){
         this.name = name;
         this.type = type;
         this.provider = provider;
         this.collection = collection;
+        this.optional = optional;
     }
 
     public String getName(){
@@ -91,4 +93,6 @@ public class Property {
     public boolean isCollection(){
         return collection;
     }
+
+    public boolean isOptional() { return optional; }
 }

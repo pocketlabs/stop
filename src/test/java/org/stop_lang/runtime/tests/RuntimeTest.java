@@ -1,9 +1,7 @@
 package org.stop_lang.runtime.tests;
 
 import org.junit.jupiter.api.Test;
-import org.stop_lang.models.State;
-import org.stop_lang.models.StateInstance;
-import org.stop_lang.models.Stop;
+import org.stop_lang.models.*;
 import org.stop_lang.runtime.StopRuntime;
 import org.stop_lang.validation.Validator;
 
@@ -84,5 +82,33 @@ public class RuntimeTest {
         StateInstance responseInstance = responseState.buildInstance(responseProperties);
 
         assertEquals(runtime.transition(redirectInstance, responseInstance), true);
+    }
+
+    @Test
+    public void transitionWithOptionals() throws Exception {
+        Stop stop = Validator.getStop("./examples/kitchen-sink.stop");
+        assert(stop != null);
+
+        StopRuntime runtime = new StopRuntime(stop);
+
+        State renderState = stop.getStates().get("Request");
+        Enumeration methodEnumeration = renderState.getEnumerations().get("Method");
+        EnumerationInstance methodInstance = new EnumerationInstance(methodEnumeration, "GET");
+        Map<String, Object> requestProperties = new HashMap<String, Object>();
+        requestProperties.put("headers", new ArrayList());
+        requestProperties.put("parameters", new ArrayList());
+        requestProperties.put("method", methodInstance);
+        requestProperties.put("path", "/test");
+        StateInstance requestInstance = renderState.buildInstance(requestProperties);
+
+        State routerState = stop.getStates().get("Router");
+        Map<String, Object> routerProperties = new HashMap<String, Object>();
+        routerProperties.put("request", requestInstance);
+        StateInstance routerInstance = routerState.buildInstance(routerProperties);
+
+        State loginState = stop.getStates().get("Login");
+        StateInstance loginInstance = loginState.buildInstance(new HashMap());
+
+        assertEquals(runtime.transition(routerInstance, loginInstance), true);
     }
 }

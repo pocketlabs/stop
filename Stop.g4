@@ -11,6 +11,7 @@ include
 model
    : START? MODEL_TYPE (throw_type)? block
    | STOP? MODEL_TYPE (throw_type)? block
+   | QUEUE? MODEL_TYPE (throw_type)? block
    | ASYNC MODEL_TYPE (throw_type)? block_with_timeout
    | ASYNC MODEL_TYPE RETURN_OP return_type (throw_type)? return_block_with_timeout
    | MODEL_TYPE RETURN_OP return_type (throw_type)? return_block
@@ -21,7 +22,7 @@ block
    ;
 
 statement
-   : enumeration | field | transition
+   : enumeration | field | transition | enqueue
    ;
 
 block_with_timeout
@@ -29,7 +30,7 @@ block_with_timeout
    ;
 
 block_with_timeout_statement
-   : enumeration | field | transition | timeout
+   : enumeration | field | transition | timeout | enqueue
    ;
 
 return_block
@@ -100,6 +101,8 @@ timeout: 'timeout' NUMBER transition;
 
 transition: TRANSITION_OP MODEL_TYPE;
 
+enqueue: ENQUEUE_OP MODEL_TYPE;
+
 
 // Tokens
 ASYNC : 'async';
@@ -108,9 +111,13 @@ START : 'start';
 
 STOP : 'stop';
 
+QUEUE : 'queue';
+
 TRANSITION_OP : '->';
 
 RETURN_OP : '<-';
+
+ENQUEUE_OP : '>>';
 
 OPTIONAL : 'optional';
 

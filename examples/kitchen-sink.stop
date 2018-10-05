@@ -91,9 +91,9 @@ Profile {
     -> Render
 }
 
-async CreatePost {
+CreatePost {
     Post post
-    timeout 30 -> TimeoutError
+    >> PushNotification
     -> Response
 }
 
@@ -116,4 +116,14 @@ stop Response {
     string content
     uint32 status
     [Header] headers
+}
+
+queue PushNotification {
+    string message
+    -> PublishPushNotification
+}
+
+stop PublishPushNotification {
+    string message
+    [string] recipients
 }

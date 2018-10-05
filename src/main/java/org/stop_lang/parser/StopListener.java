@@ -257,4 +257,14 @@ public interface StopListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTransition(StopParser.TransitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link StopParser#enqueue}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnqueue(StopParser.EnqueueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link StopParser#enqueue}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnqueue(StopParser.EnqueueContext ctx);
 }

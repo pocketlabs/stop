@@ -59,12 +59,12 @@ public class RefPhase extends StopBaseListener {
             String modelName = collectionFieldSymbol.getTypeName();
             Symbol modelSymbol = globals.resolve(modelName);
             Symbol enumSymbol = currentScope.resolve(modelName);
-            if(modelSymbol == null){
-                if ((enumSymbol != null) && (enumSymbol instanceof  EnumSymbol)){
+            if (collectionFieldSymbol.isState() && (modelSymbol == null)) {
+                if ((enumSymbol != null) && (enumSymbol instanceof EnumSymbol)) {
                     // Found symbol
                 } else {
-                    errors.add(new ValidationException("Couldn't define collection field \""+
-                            name +"\" because " + modelName + " isn't defined"));
+                    errors.add(new ValidationException("Couldn't define collection field \"" +
+                            name + "\" because " + modelName + " isn't defined"));
                 }
             }
         }
@@ -103,6 +103,14 @@ public class RefPhase extends StopBaseListener {
         Symbol modelSymbol = globals.resolve(modelName);
         if(modelSymbol == null){
             errors.add(new ValidationException("Couldn't define transition because " + modelName + " isn't defined"));
+        }
+    }
+
+    @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
+        String modelName = ctx.MODEL_TYPE().getText();
+        Symbol modelSymbol = globals.resolve(modelName);
+        if(modelSymbol == null){
+            errors.add(new ValidationException("Couldn't define enqueue because " + modelName + " isn't defined"));
         }
     }
 

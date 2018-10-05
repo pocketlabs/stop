@@ -51,6 +51,23 @@ public class StopPhase extends StopBaseListener {
         }
     }
 
+    @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
+        String modelName = ctx.MODEL_TYPE().getText();
+        Symbol symbol = globals.resolve(modelName);
+        if(symbol != null) {
+            if (symbol instanceof ModelSymbol){
+                ModelSymbol modelSymbol = (ModelSymbol) symbol;
+                boolean valid = findStop(modelSymbol);
+                if (!valid){
+                    errors.add(new ValidationException("Couldn't define enqueue \""+
+                            modelName +"\" because a stopping state could not be reached"));
+                }
+            }
+        }else{
+            errors.add(new ValidationException("Couldn't define enqueue because " + modelName + " isn't defined"));
+        }
+    }
+
     private boolean findStop(ModelSymbol modelSymbol){
         if (modelSymbol.getStop()){
             return true;

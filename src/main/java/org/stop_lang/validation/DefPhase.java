@@ -107,6 +107,12 @@ public class DefPhase extends StopBaseListener {
         currentScope.define(transitionSymbol);
     }
 
+    @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
+        String modelName = ctx.MODEL_TYPE().getText();
+        EnqueueSymbol enqueueSymbol = new EnqueueSymbol(modelName, currentScope);
+        currentScope.define(enqueueSymbol);
+    }
+
     @Override public void exitThrow_parameter(StopParser.Throw_parameterContext ctx) {
         if (currentScope instanceof  ModelSymbol){
             ModelSymbol modelSymbol = (ModelSymbol)currentScope;

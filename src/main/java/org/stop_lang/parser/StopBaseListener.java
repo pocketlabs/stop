@@ -311,6 +311,18 @@ public class StopBaseListener implements StopListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTransition(StopParser.TransitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEnqueue(StopParser.EnqueueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEnqueue(StopParser.EnqueueContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

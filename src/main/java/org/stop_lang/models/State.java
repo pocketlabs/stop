@@ -8,7 +8,8 @@ public class State {
         SYNC,
         ASYNC,
         START,
-        STOP
+        STOP,
+        QUEUE
     }
 
     protected String name;
@@ -16,6 +17,7 @@ public class State {
     protected Map<String, State> errors;
     protected Map<String, Property> properties;
     protected Map<String, Enumeration> enumerations;
+    protected Map<String, State> enqueues;
     protected StateType type;
 
     public State(String name){
@@ -24,6 +26,7 @@ public class State {
         this.errors = new TreeMap<String, State>();
         this.properties = new TreeMap<String, Property>();
         this.enumerations = new TreeMap<String, Enumeration>();
+        this.enqueues = new TreeMap<String, State>();
         this.type = StateType.SYNC;
     }
 
@@ -46,6 +49,14 @@ public class State {
 
     public Map<String, State> getTransitions(){
         return this.transitions;
+    }
+
+    public void setEnqueues(TreeMap<String, State> transitions){
+        this.enqueues = transitions;
+    }
+
+    public Map<String, State> getEnqueues(){
+        return this.enqueues;
     }
 
     public void setErrors(TreeMap<String, State> errors){
@@ -90,6 +101,10 @@ public class State {
 
     public boolean isStop(){
         return this.type == StateType.STOP;
+    }
+
+    public boolean isQueue(){
+        return this.type == StateType.QUEUE;
     }
 
     @Override

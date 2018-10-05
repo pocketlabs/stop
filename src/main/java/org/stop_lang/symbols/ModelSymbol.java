@@ -11,9 +11,11 @@ public class ModelSymbol extends SymbolWithScope {
     private boolean async = false;
     private boolean stop =false;
     private boolean start =false;
+    private boolean queue = false;
     private String asyncReturnType = null;
     private List<String> errorTypes = new ArrayList<String>();
     private List<String> transitions = new ArrayList<String>();
+    private List<String> enqueue = new ArrayList<String>();
     public int timeout = 0;
     private String timeoutTransition = null;
 
@@ -26,6 +28,8 @@ public class ModelSymbol extends SymbolWithScope {
             start = true;
         }else if(ctx.ASYNC() != null) {
             async = true;
+        } else if (ctx.QUEUE() != null){
+            queue = true;
         }
         if (ctx.return_type()!=null){
             asyncReturnType = ctx.return_type().getText();
@@ -40,6 +44,9 @@ public class ModelSymbol extends SymbolWithScope {
     }
     public boolean getStart(){
         return start;
+    }
+    public boolean getQueue(){
+        return queue;
     }
 
     public String getAsyncReturnType(){
@@ -68,5 +75,13 @@ public class ModelSymbol extends SymbolWithScope {
 
     public String getTimeoutTransition(){
         return this.timeoutTransition;
+    }
+
+    public void addEnqueue(String queue){
+        enqueue.add(queue);
+    }
+
+    public List<String> getEnqueues(){
+        return enqueue;
     }
 }

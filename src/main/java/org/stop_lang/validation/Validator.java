@@ -91,6 +91,8 @@ public class Validator {
                         type = State.StateType.STOP;
                     } else if (modelSymbol.getStart()){
                         type = State.StateType.START;
+                    } else if (modelSymbol.getQueue()){
+                        type = State.StateType.QUEUE;
                     }
 
                     State state = new State(name, type);
@@ -127,6 +129,15 @@ public class Validator {
                     }
                 }
                 modelState.setTransitions(transitions);
+
+                TreeMap<String, State> enqueues = new TreeMap<String, State>(String.CASE_INSENSITIVE_ORDER);
+                for(String enqueueName : modelSymbol.getEnqueues()){
+                    State enqueueState = states.get(enqueueName);
+                    if (enqueueState != null){
+                        transitions.put(enqueueName, enqueueState);
+                    }
+                }
+                modelState.setEnqueues(enqueues);
 
                 TreeMap<String, State> errors = new TreeMap<String, State>(String.CASE_INSENSITIVE_ORDER);
                 for(String errorTransitionName : modelSymbol.getErrorTypes()) {

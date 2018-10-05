@@ -258,6 +258,8 @@ public class Validator {
                 return Property.PropertyType.STRING;
             case "bytes":
                 return Property.PropertyType.BYTES;
+            case "timestamp":
+                return Property.PropertyType.TIMESTAMP;
             default:
                 throw new IllegalArgumentException("Invalid type name");
         }

@@ -19,6 +19,7 @@ public class Property {
         BOOL,
         STRING,
         BYTES,
+        TIMESTAMP,
         STATE,
         ENUM
     }

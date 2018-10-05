@@ -22,6 +22,7 @@ Request {
     Method method
     string path
     optional string body
+    timestamp time
     [Header] headers
     [Parameter] parameters
 }

@@ -5,6 +5,7 @@ import org.stop_lang.models.*;
 import org.stop_lang.runtime.StopRuntime;
 import org.stop_lang.validation.Validator;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,6 +100,7 @@ public class RuntimeTest {
         requestProperties.put("parameters", new ArrayList());
         requestProperties.put("method", methodInstance);
         requestProperties.put("path", "/test");
+        requestProperties.put("time", Instant.now());
         StateInstance requestInstance = renderState.buildInstance(requestProperties);
 
         State routerState = stop.getStates().get("Router");

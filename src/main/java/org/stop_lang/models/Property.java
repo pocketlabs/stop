@@ -1,6 +1,7 @@
 package org.stop_lang.models;
 
 import java.nio.ByteBuffer;
+import java.time.Instant;
 
 public class Property {
     public enum PropertyType {
@@ -82,6 +83,8 @@ public class Property {
                 return String.class;
             case BYTES:
                 return ByteBuffer.class;
+            case TIMESTAMP:
+                return Instant.class;
             default:
                 throw new IllegalArgumentException("Invalid type supplied");
         }

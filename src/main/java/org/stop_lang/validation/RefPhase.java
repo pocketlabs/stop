@@ -1,5 +1,6 @@
 package org.stop_lang.validation;
 
+import org.antlr.symtab.FieldSymbol;
 import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
@@ -49,7 +50,7 @@ public class RefPhase extends StopBaseListener {
                 if ((enumSymbol != null) && (enumSymbol instanceof EnumSymbol)){
                     // Found symbol
                 } else {
-                    errors.add(new ValidationException("Couldn't define field \""+
+                    errors.add(new StopValidationException("Couldn't define field \""+
                             name +"\" because " + modelName + " isn't defined"));
                 }
             }
@@ -63,7 +64,7 @@ public class RefPhase extends StopBaseListener {
                 if ((enumSymbol != null) && (enumSymbol instanceof EnumSymbol)) {
                     // Found symbol
                 } else {
-                    errors.add(new ValidationException("Couldn't define collection field \"" +
+                    errors.add(new StopValidationException("Couldn't define collection field \"" +
                             name + "\" because " + modelName + " isn't defined"));
                 }
             }
@@ -72,7 +73,7 @@ public class RefPhase extends StopBaseListener {
             String modelName = ctx.async_source().MODEL_TYPE().getText();
             Symbol modelSymbol = globals.resolve(modelName);
             if(modelSymbol == null){
-                errors.add(new ValidationException("Couldn't define field \""+
+                errors.add(new StopValidationException("Couldn't define field \""+
                         name +"\" because " + modelName + " isn't defined"));
             }else{
                 ModelSymbol theModelSymbol = (ModelSymbol)modelSymbol;
@@ -84,12 +85,12 @@ public class RefPhase extends StopBaseListener {
                     typeString = ctx.collection().getText();
                 }
                 if(typeString!=null){
-                    if (theModelSymbol.getAsyncReturnType()!=null){
-                        if (!typeString.equals(theModelSymbol.getAsyncReturnType())){
-                            errors.add(new ValidationException("Couldn't define field \""+
+                    if (theModelSymbol.getReturnTypeString()!=null){
+                        if (!typeString.equals(theModelSymbol.getReturnTypeString())){
+                            errors.add(new StopValidationException("Couldn't define field \""+
                                     name +"\" because "
                                     + typeString + " doesn't match async return type of "
-                                    + theModelSymbol.getAsyncReturnType()));
+                                    + theModelSymbol.getReturnTypeString()));
                             System.err.println();
                         }
                     }
@@ -102,7 +103,7 @@ public class RefPhase extends StopBaseListener {
         String modelName = ctx.MODEL_TYPE().getText();
         Symbol modelSymbol = globals.resolve(modelName);
         if(modelSymbol == null){
-            errors.add(new ValidationException("Couldn't define transition because " + modelName + " isn't defined"));
+            errors.add(new StopValidationException("Couldn't define transition because " + modelName + " isn't defined"));
         }
     }
 
@@ -110,7 +111,7 @@ public class RefPhase extends StopBaseListener {
         String modelName = ctx.MODEL_TYPE().getText();
         Symbol modelSymbol = globals.resolve(modelName);
         if(modelSymbol == null){
-            errors.add(new ValidationException("Couldn't define enqueue because " + modelName + " isn't defined"));
+            errors.add(new StopValidationException("Couldn't define enqueue because " + modelName + " isn't defined"));
         }
     }
 
@@ -120,7 +121,7 @@ public class RefPhase extends StopBaseListener {
                 String modelName = ctx.type().model_type().MODEL_TYPE().getText();
                 Symbol modelSymbol = globals.resolve(modelName);
                 if(modelSymbol == null){
-                    errors.add(new ValidationException("Couldn't define return type because " + modelName + " isn't defined"));
+                    errors.add(new StopValidationException("Couldn't define return type because " + modelName + " isn't defined"));
                 }
             }
         }
@@ -129,7 +130,7 @@ public class RefPhase extends StopBaseListener {
                 String modelName = ctx.collection().type().model_type().MODEL_TYPE().getText();
                 Symbol modelSymbol = globals.resolve(modelName);
                 if(modelSymbol == null){
-                    errors.add(new ValidationException("Couldn't define return collection because "
+                    errors.add(new StopValidationException("Couldn't define return collection because "
                             + modelName + " isn't defined"));
                 }
             }
@@ -141,8 +142,35 @@ public class RefPhase extends StopBaseListener {
             String modelName = ctx.MODEL_TYPE().getText();
             Symbol modelSymbol = globals.resolve(modelName);
             if(modelSymbol == null){
-                errors.add(new ValidationException("Couldn't define thrown transition because "
+                errors.add(new StopValidationException("Couldn't define thrown transition because "
                         + modelName + " isn't defined"));
+            }
+        }
+    }
+
+    @Override public void exitTimeout(StopParser.TimeoutContext ctx) {
+        if (ctx.transition().MODEL_TYPE()!=null){
+            String modelName = ctx.transition().MODEL_TYPE().getText();
+            Symbol modelSymbol = globals.resolve(modelName);
+            if(modelSymbol == null){
+                errors.add(new StopValidationException("Couldn't define timeout transition because "
+                        + modelName + " isn't defined"));
+            }
+            if (modelSymbol instanceof ModelSymbol) {
+                ModelSymbol theModelSymbol = (ModelSymbol) modelSymbol;
+                Symbol timedOutStateSymbol = theModelSymbol.resolve("timedOutState");
+                if (timedOutStateSymbol != null){
+                    if (timedOutStateSymbol instanceof ModelFieldSymbol){
+                        ModelFieldSymbol fieldSymbol = (ModelFieldSymbol)timedOutStateSymbol;
+                        if (!fieldSymbol.getTypeName().equals(currentScope.getName())){
+                            errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState has type " + fieldSymbol.getTypeName() + " instead of " + currentScope.getName()));
+                        }
+                    }else {
+                        errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState isn't defined"));
+                    }
+                }else{
+                    errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState not defined"));
+                }
             }
         }
     }

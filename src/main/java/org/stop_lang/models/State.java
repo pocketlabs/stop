@@ -19,6 +19,9 @@ public class State {
     protected Map<String, Enumeration> enumerations;
     protected Map<String, State> enqueues;
     protected StateType type;
+    protected Property.PropertyType returnType = null;
+    protected State returnState = null;
+    protected boolean returnCollection = false;
 
     public State(String name){
         this.name = name;
@@ -35,7 +38,7 @@ public class State {
         this.type = type;
     }
 
-    public StateInstance buildInstance(Map<String, Object> properties) throws Exception{
+    public StateInstance buildInstance(Map<String, Object> properties){
         return new StateInstance(this, properties);
     }
 
@@ -105,6 +108,28 @@ public class State {
 
     public boolean isQueue(){
         return this.type == StateType.QUEUE;
+    }
+
+    public boolean hasReturnType() {
+        return this.returnType != null;
+    }
+
+    public void setReturn(Property.PropertyType type, State state, boolean collection){
+        this.returnType = type;
+        this.returnState = state;
+        this.returnCollection = collection;
+    }
+
+    public Property.PropertyType getReturnType(){
+        return this.returnType;
+    }
+
+    public boolean isReturnCollection(){
+        return this.returnCollection;
+    }
+
+    public State getReturnState(){
+        return this.returnState;
     }
 
     @Override

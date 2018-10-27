@@ -36,7 +36,7 @@ public class DefPhase extends StopBaseListener {
     @Override public void exitModel(StopParser.ModelContext ctx) {
         ModelSymbol modelSymbol = (ModelSymbol) currentScope;
         if (modelSymbol.getAsync() && (modelSymbol.timeout == 0)){
-            errors.add(new ValidationException("Asynchronous states " + modelSymbol.getName() + " must have a timeout defined"));
+            errors.add(new StopValidationException("Asynchronous states " + modelSymbol.getName() + " must have a timeout defined"));
         }
         currentScope = currentScope.getEnclosingScope();
     }
@@ -48,9 +48,9 @@ public class DefPhase extends StopBaseListener {
         modelSymbol.setTimeoutTransition(modelTransitionName);
         int timeout = Integer.parseInt(numberString);
         if(timeout == 0){
-            errors.add(new ValidationException("Timeout must be greater than zero for " + modelSymbol.getName()));
+            errors.add(new StopValidationException("Timeout must be greater than zero for " + modelSymbol.getName()));
         }else if (modelSymbol.timeout > 0){
-            errors.add(new ValidationException("Timeout already defined for " + modelSymbol.getName()));
+            errors.add(new StopValidationException("Timeout already defined for " + modelSymbol.getName()));
         }else {
             modelSymbol.timeout = timeout;
         }

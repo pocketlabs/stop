@@ -10,6 +10,7 @@ import org.stop_lang.symbols.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class Validator {
@@ -19,16 +20,16 @@ public class Validator {
     }
 
     public static boolean validate(CharStream input) {
-        Stop stop = getStop(input);
-        return stop != null;
+        Map<String, State> states = getStates(input);
+        return states != null;
     }
 
-    public static Stop getStop(String filename) throws IOException {
+    public static Map<String, State>  getStates(String filename) throws IOException {
         CharStream input = CharStreams.fromFileName(filename);
-        return getStop(input);
+        return getStates(input);
     }
 
-    public static Stop getStop(CharStream input) {
+    public static Map<String, State> getStates(CharStream input) {
         StopLexer l = new StopLexer(input);
         TokenStream tokens = new CommonTokenStream(l);
         StopParser parser = new StopParser(tokens);
@@ -165,6 +166,20 @@ public class Validator {
                 }
                 modelState.setEnumerations(enumerations);
 
+                if (modelSymbol.getReturnType()!= null){
+                    Property.PropertyType returnPropertyType;
+                    String returnTypeString = modelSymbol.getReturnType().toString();
+                    State returnState = null;
+                    try {
+                        returnPropertyType = Property.PropertyType.valueOf(returnTypeString);
+                    }catch(IllegalArgumentException e){
+                        returnPropertyType = Property.PropertyType.STATE;
+                        returnState = states.get(returnTypeString);
+                    }
+
+                    modelState.setReturn(returnPropertyType, returnState, modelSymbol.isReturnCollection());
+                }
+
                 TreeMap<String, Property> properties = new TreeMap<String, Property>(String.CASE_INSENSITIVE_ORDER);
                 for (Symbol childSymbol : modelSymbol.getSymbols()){
                     if (childSymbol instanceof StopFieldSymbol) {
@@ -218,9 +233,7 @@ public class Validator {
             }
         }
 
-        Stop app = new Stop(states);
-
-        return app;
+        return states;
     }
 
     private static boolean handleErrors(List<Exception> exceptions){

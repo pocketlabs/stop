@@ -42,12 +42,12 @@ public class StopPhase extends StopBaseListener {
                 ModelSymbol modelSymbol = (ModelSymbol) symbol;
                 boolean valid = findStop(modelSymbol);
                 if (!valid){
-                    errors.add(new ValidationException("Couldn't define transition \""+
+                    errors.add(new StopValidationException("Couldn't define transition \""+
                             modelName +"\" because a stopping state could not be reached"));
                 }
             }
         }else{
-            errors.add(new ValidationException("Couldn't define transition because " + modelName + " isn't defined"));
+            errors.add(new StopValidationException("Couldn't define transition because " + modelName + " isn't defined"));
         }
     }
 
@@ -59,12 +59,12 @@ public class StopPhase extends StopBaseListener {
                 ModelSymbol modelSymbol = (ModelSymbol) symbol;
                 boolean valid = findStop(modelSymbol);
                 if (!valid){
-                    errors.add(new ValidationException("Couldn't define enqueue \""+
+                    errors.add(new StopValidationException("Couldn't define enqueue \""+
                             modelName +"\" because a stopping state could not be reached"));
                 }
             }
         }else{
-            errors.add(new ValidationException("Couldn't define enqueue because " + modelName + " isn't defined"));
+            errors.add(new StopValidationException("Couldn't define enqueue because " + modelName + " isn't defined"));
         }
     }
 

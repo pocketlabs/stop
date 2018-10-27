@@ -1,0 +1,35 @@
+start A {
+    string test1
+    -> B
+}
+
+GetDynamicText <- string {
+    string test2
+}
+
+Post {
+    string title
+}
+
+async GetPosts <- [Post] throws DatabaseError {
+    timeout 10 -> GetPostsTimeoutError
+}
+
+stop DatabaseError {
+
+}
+
+stop GetPostsTimeoutError {
+    GetPosts timedOutState
+}
+
+B {
+    string test2
+    string dynamicText <- GetDynamicText
+    [Post] posts <- GetPosts
+    -> C
+}
+
+stop C {
+    string test3
+}

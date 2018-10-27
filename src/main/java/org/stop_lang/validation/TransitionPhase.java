@@ -1,6 +1,5 @@
 package org.stop_lang.validation;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
@@ -53,13 +52,13 @@ public class TransitionPhase extends StopBaseListener {
             if (symbol instanceof ModelSymbol){
                 ModelSymbol transitionSymbol = (ModelSymbol)symbol;
                 if (transitionSymbol.getQueue()){
-                    errors.add(new ValidationException("Couldn't define transition because " + modelName + " is a queue state"));
+                    errors.add(new StopValidationException("Couldn't define transition because " + modelName + " is a queue state"));
                 }else {
                     modelSymbol.addTransition(modelName);
                 }
             }
         }else{
-            errors.add(new ValidationException("Couldn't define transition because " + modelName + " isn't defined"));
+            errors.add(new StopValidationException("Couldn't define transition because " + modelName + " isn't defined"));
         }
     }
 
@@ -79,11 +78,11 @@ public class TransitionPhase extends StopBaseListener {
                 if (transitionSymbol.getQueue()){
                     modelSymbol.addEnqueue(modelName);
                 }else {
-                    errors.add(new ValidationException("Couldn't define enqueue because " + modelName + " isn't a queue state"));
+                    errors.add(new StopValidationException("Couldn't define enqueue because " + modelName + " isn't a queue state"));
                 }
             }
         }else{
-            errors.add(new ValidationException("Couldn't define queue because " + modelName + " isn't defined"));
+            errors.add(new StopValidationException("Couldn't define queue because " + modelName + " isn't defined"));
         }
     }
 
@@ -96,13 +95,13 @@ public class TransitionPhase extends StopBaseListener {
             if (symbol instanceof ModelSymbol){
                 ModelSymbol transitionSymbol = (ModelSymbol)symbol;
                 if (transitionSymbol.getQueue()){
-                    errors.add(new ValidationException("Couldn't define transition because " + modelName + " is a queue state"));
+                    errors.add(new StopValidationException("Couldn't define transition because " + modelName + " is a queue state"));
                 }else {
                     modelSymbol.addErrorType(modelName);
                 }
             }
         }else{
-            errors.add(new ValidationException("Couldn't define thrown transition because " + modelName + " isn't defined"));
+            errors.add(new StopValidationException("Couldn't define thrown transition because " + modelName + " isn't defined"));
         }
     }
 }

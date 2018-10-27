@@ -99,4 +99,41 @@ public class Property {
     }
 
     public boolean isOptional() { return optional; }
+
+    public static PropertyType getPropertyType(String type){
+        switch(type){
+            case "float":
+                return PropertyType.FLOAT;
+            case "int32":
+                return PropertyType.INT32;
+            case "int64":
+                return PropertyType.INT64;
+            case "uint32":
+                return PropertyType.UINT32;
+            case "uint64":
+                return PropertyType.UINT64;
+            case "sint32":
+                return PropertyType.SINT32;
+            case "sint64":
+                return PropertyType.SINT64;
+            case "fixed32":
+                return PropertyType.FIXED32;
+            case "fixed64":
+                return PropertyType.FIXED64;
+            case "sfixed32":
+                return PropertyType.SFIXED32;
+            case "sfixed64":
+                return PropertyType.SFIXED64;
+            case "bool":
+                return PropertyType.BOOL;
+            case "string":
+                return PropertyType.STRING;
+            case "bytes":
+                return PropertyType.BYTES;
+            case "timestamp":
+                return PropertyType.TIMESTAMP;
+        }
+
+        return PropertyType.STATE;
+    }
 }

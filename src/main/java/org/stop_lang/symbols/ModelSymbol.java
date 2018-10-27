@@ -12,12 +12,14 @@ public class ModelSymbol extends SymbolWithScope {
     private boolean stop =false;
     private boolean start =false;
     private boolean queue = false;
-    private String asyncReturnType = null;
+    private String returnTypeString = null;
     private List<String> errorTypes = new ArrayList<String>();
     private List<String> transitions = new ArrayList<String>();
     private List<String> enqueue = new ArrayList<String>();
     public int timeout = 0;
     private String timeoutTransition = null;
+    private String returnType = null;
+    private boolean returnCollection = false;
 
     public ModelSymbol(StopParser.ModelContext ctx, Scope enclosingScope){
         super(ctx.MODEL_TYPE().getText());
@@ -32,7 +34,16 @@ public class ModelSymbol extends SymbolWithScope {
             queue = true;
         }
         if (ctx.return_type()!=null){
-            asyncReturnType = ctx.return_type().getText();
+            returnTypeString = ctx.return_type().getText();
+            if (ctx.return_type().collection() != null) {
+                if (ctx.return_type().collection().type() != null) {
+                    returnType = ctx.return_type().collection().type().getText();
+                    returnCollection = true;
+                }
+            }else if(ctx.return_type().type() != null){
+                returnType = ctx.return_type().type().getText();
+                returnCollection = false;
+            }
         }
     }
 
@@ -49,8 +60,16 @@ public class ModelSymbol extends SymbolWithScope {
         return queue;
     }
 
-    public String getAsyncReturnType(){
-        return asyncReturnType;
+    public String getReturnTypeString(){
+        return returnTypeString;
+    }
+
+    public String getReturnType(){
+        return returnType;
+    }
+
+    public boolean isReturnCollection(){
+        return returnCollection;
     }
 
     public List<String> getErrorTypes(){
@@ -75,6 +94,14 @@ public class ModelSymbol extends SymbolWithScope {
 
     public String getTimeoutTransition(){
         return this.timeoutTransition;
+    }
+
+    public void setTimeout(int timeout){
+        this.timeout = timeout;
+    }
+
+    public int getTimeout(){
+        return this.timeout;
     }
 
     public void addEnqueue(String queue){

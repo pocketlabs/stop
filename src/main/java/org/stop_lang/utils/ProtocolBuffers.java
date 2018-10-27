@@ -11,7 +11,7 @@ public class ProtocolBuffers {
     public ProtocolBuffers(){}
 
     public String generate(CharStream input) throws IOException {
-        Stop stop = Validator.getStop(input);
+        Stop stop = new Stop(input);
 
         if (stop == null){
             throw new IOException("Invalid stop_lang file");

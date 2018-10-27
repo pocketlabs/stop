@@ -8,6 +8,14 @@
     <artifactId>Stop</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <distributionManagement>
+        <repository>
+            <id>dev</id>
+            <name>dev</name>
+            <url>file:///Users/kyleshank/repo</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>

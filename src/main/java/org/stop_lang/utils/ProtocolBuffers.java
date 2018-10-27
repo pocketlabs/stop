@@ -19,6 +19,7 @@ public class ProtocolBuffers {
 
         StringBuilder sb = new StringBuilder();
         sb.append("syntax = \"proto3\";\n\n");
+        sb.append("import \"google/protobuf/timestamp.proto\"\n\n");
 
         for (State state : stop.getStates().values()){
             sb.append("message " + state.getName() + " {\n");
@@ -88,6 +89,8 @@ public class ProtocolBuffers {
                 return "string";
             case BYTES:
                 return "bytes";
+            case TIMESTAMP:
+                return "google.protobuf.Timestamp";
             default:
                 throw new IllegalArgumentException("Invalid type supplied " + propertyType);
         }

@@ -15,14 +15,32 @@ public class StopRuntime {
         return this.stop;
     }
 
-    public boolean transition(StateInstance from, StateInstance to){
+    public void transition(StateInstance from, StateInstance to) throws StopRuntimeException {
         if (from == null || to == null){
-            return false;
+            throw new StopRuntimeException("From and to state instances must be defined");
         }
 
         State errorState = from.getState().getErrors().get(to.getState().getName());
         State transitionState = from.getState().getTransitions().get(to.getState().getName());
 
-        return (errorState != null) || (transitionState != null);
+        if ((errorState == null) && (transitionState == null)){
+            throw new StopRuntimeException("Could not find state to transition to called " + to.getState().getName());
+        }
+    }
+
+    public void queue(StateInstance from, StateInstance queue) throws StopRuntimeException {
+        if (from == null || queue == null){
+            throw new StopRuntimeException("From and queue state instances must be defined");
+        }
+
+        State queueState = from.getState().getEnqueues().get(queue.getState().getName());
+
+        if (queueState == null){
+            throw new StopRuntimeException("Could not find queue " + queue.getState().getName());
+        }
+
+        if(!queueState.isQueue()){
+            throw new StopRuntimeException("Invalid queue state");
+        }
     }
 }

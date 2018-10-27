@@ -89,7 +89,11 @@ Profile {
     uint64 user_id
     [Post] posts <- GetUserPosts
     [Post] publicPosts <- FilterPublicPosts
+    Request currentRequest <- GetRequest
     -> Render
+}
+
+GetRequest <- Request {
 }
 
 CreatePost {

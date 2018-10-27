@@ -134,7 +134,7 @@ public class Validator {
                 for(String enqueueName : modelSymbol.getEnqueues()){
                     State enqueueState = states.get(enqueueName);
                     if (enqueueState != null){
-                        transitions.put(enqueueName, enqueueState);
+                        enqueues.put(enqueueName, enqueueState);
                     }
                 }
                 modelState.setEnqueues(enqueues);
@@ -144,6 +144,13 @@ public class Validator {
                     State errorState = states.get(errorTransitionName);
                     if (errorState!=null){
                         errors.put(errorTransitionName, errorState);
+                    }
+                }
+                if (modelSymbol.getTimeoutTransition() != null){
+                    String timeoutTransitionName = modelSymbol.getTimeoutTransition();
+                    State errorState = states.get(timeoutTransitionName);
+                    if (errorState!=null){
+                        errors.put(timeoutTransitionName, errorState);
                     }
                 }
                 modelState.setErrors(errors);

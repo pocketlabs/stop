@@ -50,7 +50,7 @@ UserNotFoundError {
 async GetUserWithPassword <- User throws UserNotFoundError {
     string login
     string password
-    timeout 5 -> TimeoutError
+    timeout 5 -> GetUserWithPasswordTimeoutError
 }
 
 Post {
@@ -61,7 +61,7 @@ Post {
 
 async GetUserPosts <- [Post] throws UserNotFoundError {
     uint64 user_id
-    timeout 5 -> TimeoutError
+    timeout 5 -> GetUserPostsTimeoutError
 }
 
 FilterPublicPosts <- [Post] {
@@ -112,7 +112,13 @@ Redirect {
     -> Response
 }
 
-TimeoutError {
+GetUserWithPasswordTimeoutError {
+    GetUserWithPassword timedOutState
+    -> Response
+}
+
+GetUserPostsTimeoutError {
+    GetUserPosts timedOutState
     -> Response
 }
 

@@ -27,9 +27,16 @@ public class StateInstance {
     }
 
     public void validateProperties() throws StopValidationException {
+        validateProperties(true);
+    }
+
+    public void validateProperties(boolean validateDynamicProperties) throws StopValidationException {
         Map<String, Property> stateProperties = this.state.getProperties();
         for (Map.Entry<String, Property> entry : stateProperties.entrySet()){
             if (!properties.containsKey(entry.getKey())){
+                if (!validateDynamicProperties && (entry.getValue().getProvider()!=null)){
+                    continue;
+                }
                 if (entry.getValue().isOptional()){
                     continue;
                 }else {

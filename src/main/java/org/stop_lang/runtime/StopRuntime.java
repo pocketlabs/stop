@@ -10,6 +10,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
     private Stop stop;
     private StopRuntimeImplementation<T> implementation;
     private ExecutorService executor;
+    private StateInstance currentStateInstance = null;
 
     public StopRuntime(Stop stop, StopRuntimeImplementation<T> implementation){
         this.stop = stop;
@@ -26,12 +27,39 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
         return start(to);
     }
 
+    @Override
+    public void queue(T implementationInstance) throws StopRuntimeException, StopValidationException {
+        if (currentStateInstance == null){
+            throw new StopRuntimeException("No current state instance");
+        }
+
+        StateInstance queue = implementation.buildStateInstance(implementationInstance);
+
+        if (queue == null){
+            throw new StopRuntimeException("queue state instance must be defined");
+        }
+
+        State queueState = currentStateInstance.getState().getEnqueues().get(queue.getState().getName());
+
+        if (queueState == null){
+            throw new StopRuntimeException("Could not find queue " + queue.getState().getName());
+        }
+
+        if(!queueState.isQueue()){
+            throw new StopRuntimeException("Invalid queue state");
+        }
+
+        queue.validateProperties(false);
+
+        implementation.enqueue(implementationInstance);
+    }
+
     private T start(StateInstance to) throws StopRuntimeException, StopValidationException {
         if (to == null){
             throw new StopRuntimeException("To state instances must be defined");
         }
 
-        if (!to.getState().isStart()){
+        if (!to.getState().isStart() && !to.getState().isQueue()){
             throw new StopRuntimeException("Invalid start state");
         }
 
@@ -66,6 +94,8 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
         }
 
         stateInstance.validateProperties();
+
+        currentStateInstance = stateInstance;
 
         T implementationInstance = implementation.buildImplementationInstance(stateInstance);
 
@@ -128,31 +158,6 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
 
         return execute(to);
     }
-
-//    public void queue(T fromImplementationInstance, T queueImplementationInstance) throws StopRuntimeException, StopValidationException {
-//        StateInstance from = implementation.buildStateInstance(fromImplementationInstance);
-//        StateInstance queue = implementation.buildStateInstance(queueImplementationInstance);
-//
-//        if (from == null || queue == null){
-//            throw new StopRuntimeException("From and queue state instances must be defined");
-//        }
-//
-//        from.validateProperties();
-//
-//        State queueState = from.getState().getEnqueues().get(queue.getState().getName());
-//
-//        if (queueState == null){
-//            throw new StopRuntimeException("Could not find queue " + queue.getState().getName());
-//        }
-//
-//        if(!queueState.isQueue()){
-//            throw new StopRuntimeException("Invalid queue state");
-//        }
-//
-//        gatherDynamicProperties(queue);
-//
-//        queue.validateProperties();
-//    }
 
     private void gatherDynamicProperties(StateInstance to) throws StopRuntimeException, StopValidationException, StopRuntimeErrorException {
         for (Map.Entry<String, Property> propertyEntry : to.getState().getProperties().entrySet()){
@@ -276,10 +281,5 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
             }
         }
         return new StateInstance(providerState, providerProperties);
-    }
-
-    @Override
-    public void queue(T implementationInstance) throws StopRuntimeException {
-        System.out.println("queue " + implementationInstance.toString());
     }
 }

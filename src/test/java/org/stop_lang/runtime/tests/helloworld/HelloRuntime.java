@@ -76,4 +76,9 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
         }
         return null;
     }
+
+    @Override
+    public void enqueue(HelloRuntimeBase implementationInstance) {
+
+    }
 }

@@ -1,5 +1,7 @@
 package org.stop_lang.runtime;
 
+import org.stop_lang.validation.StopValidationException;
+
 public interface StopRuntimeImplementationExecution<T> {
-    void queue(T implementationInstance) throws StopRuntimeException;
+    void queue(T implementationInstance) throws StopRuntimeException, StopValidationException;
 }

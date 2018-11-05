@@ -171,7 +171,7 @@ public class Validator {
                     String returnTypeString = modelSymbol.getReturnType().toString();
                     State returnState = null;
                     try {
-                        returnPropertyType = Property.PropertyType.valueOf(returnTypeString);
+                        returnPropertyType = Property.PropertyType.valueOf(returnTypeString.toUpperCase());
                     }catch(IllegalArgumentException e){
                         returnPropertyType = Property.PropertyType.STATE;
                         returnState = states.get(returnTypeString);

@@ -52,6 +52,10 @@ public class Property {
     }
 
     protected Class getClassForPropertyType(Property.PropertyType propertyType){
+        return getClassForScalarPropertyType(propertyType);
+    }
+
+    public static Class getClassForScalarPropertyType(Property.PropertyType propertyType){
         switch(propertyType){
             case DOUBLE:
                 return Double.class;

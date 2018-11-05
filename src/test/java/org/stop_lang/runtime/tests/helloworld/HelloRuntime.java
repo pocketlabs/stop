@@ -23,12 +23,12 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
     }
 
     @Override
-    public StateInstance buildStateInstance(HelloRuntimeBase implementationInstance) {
+    public StateInstance buildStateInstance(HelloRuntimeBase implementationInstance) throws StopRuntimeException{
         return new StateInstance(this.stop.getStates().get(implementationInstance.getName()), implementationInstance);
     }
 
     @Override
-    public HelloRuntimeBase buildImplementationInstance(StateInstance stateInstance) {
+    public HelloRuntimeBase buildImplementationInstance(StateInstance stateInstance)  throws StopRuntimeException{
         HelloRuntimeBase base = new HelloRuntimeBase(stateInstance.getState().getName());
         base.putAll(stateInstance.getProperties());
         return base;
@@ -79,6 +79,11 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
 
     @Override
     public void enqueue(HelloRuntimeBase implementationInstance) {
+
+    }
+
+    @Override
+    public void log(String message){
 
     }
 }

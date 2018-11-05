@@ -54,6 +54,11 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
         implementation.enqueue(implementationInstance);
     }
 
+    @Override
+    public void log(String message){
+        implementation.log(message);
+    }
+
     private T start(StateInstance to) throws StopRuntimeException, StopValidationException {
         if (to == null){
             throw new StopRuntimeException("To state instances must be defined");
@@ -118,6 +123,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                 } catch (ExecutionException e) {
                     throw new StopRuntimeException(e.getMessage());
                 } catch (TimeoutException e) {
+                    future.cancel(true);
                     if (asyncState.getTimeoutTransition()!=null){
                         Map<String, Object> props = new HashMap<String, Object>();
                         props.put("timedOutState", stateInstance);
@@ -197,6 +203,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                                     }
                                     throw new StopRuntimeException(e.getMessage());
                                 } catch (TimeoutException e) {
+                                    future.cancel(true);
                                     if (asyncProviderState.getTimeoutTransition()!=null){
                                         Map<String, Object> props = new HashMap<String, Object>();
                                         props.put("timedOutState", providerStateInstance);
@@ -243,6 +250,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                                     }
                                     throw new StopRuntimeException(e.getMessage());
                                 } catch (TimeoutException e) {
+                                    future.cancel(true);
                                     if (asyncProviderState.getTimeoutTransition()!=null){
                                         Map<String, Object> props = new HashMap<String, Object>();
                                         props.put("timedOutState", providerStateInstance);

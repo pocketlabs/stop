@@ -263,10 +263,12 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                                 returnValue = implementation.executeAndReturnValue(providerImplementationInstance, this);
                             }
 
-                            if (providerState.getReturnState() != null) {
-                                value = implementation.buildStateInstance((T) returnValue);
-                            } else {
-                                value = returnValue;
+                            if (returnValue!=null) {
+                                if (providerState.getReturnState() != null) {
+                                    value = implementation.buildStateInstance((T) returnValue);
+                                } else {
+                                    value = returnValue;
+                                }
                             }
                         }
 

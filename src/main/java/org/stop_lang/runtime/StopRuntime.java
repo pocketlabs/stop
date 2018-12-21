@@ -121,6 +121,12 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                 } catch (InterruptedException e) {
                     throw new StopRuntimeException(e.getMessage());
                 } catch (ExecutionException e) {
+                    if (e.getCause()!=null){
+                        if (e.getCause() instanceof StopRuntimeErrorException){
+                            StopRuntimeErrorException runtimeErrorException = (StopRuntimeErrorException)e.getCause();
+                            throw runtimeErrorException;
+                        }
+                    }
                     throw new StopRuntimeException(e.getMessage());
                 } catch (TimeoutException e) {
                     future.cancel(true);
@@ -278,6 +284,16 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                     }catch(StopRuntimeErrorException errorException){
                         throw new StopRuntimeErrorException(errorException.getErrorStateInstance(), providerStateInstance);
                     }
+                }
+            }
+        }
+
+        for ( Map.Entry<String, Object> entry : to.getProperties().entrySet() ){
+            Object value = entry.getValue();
+            if (value != null){
+                if (value instanceof StateInstance){
+                    StateInstance propertyStateInstance = (StateInstance)value;
+                    gatherDynamicProperties(propertyStateInstance);
                 }
             }
         }

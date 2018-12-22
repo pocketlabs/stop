@@ -74,6 +74,13 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
             posts.add(post);
             return posts;
         }
+        if (implementationInstance.getName().equalsIgnoreCase("GetFilteredPosts")) {
+            HelloRuntimeBase post = new HelloRuntimeBase("Post");
+            post.put("title", "Hey! Filtered! Post!");
+            List<HelloRuntimeBase> posts = new ArrayList<>();
+            posts.add(post);
+            return posts;
+        }
         return null;
     }
 

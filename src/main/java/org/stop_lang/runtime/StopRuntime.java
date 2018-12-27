@@ -171,9 +171,58 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
         return execute(to);
     }
 
+    private List<String> getPropertyWithDependencies(Map<String, List<String>> dependencyMap, String property ){
+        List<String> order = new ArrayList<>();
+        if(dependencyMap.get(property)!=null) {
+            for (String dep : dependencyMap.get(property)) {
+                order.addAll(getPropertyWithDependencies(dependencyMap, dep));
+            }
+            order.add(property);
+        }
+        return order;
+    }
+
     private void gatherDynamicProperties(StateInstance to) throws StopRuntimeException, StopValidationException, StopRuntimeErrorException {
+        List<Property> orderedProperties = new ArrayList<Property>();
+        Map<String, List<String>> dependentProviderProperties = new HashMap<String,List<String>>();
+
         for (Map.Entry<String, Property> propertyEntry : to.getState().getProperties().entrySet()){
             Property property = propertyEntry.getValue();
+            if (property != null){
+                if (property.getProvider() == null) {
+                    orderedProperties.add(property);
+                } else {
+                    List<String> dependencies = new ArrayList<>();
+                    for (Map.Entry<String, Property> providerPropertyEntry : property.getProvider().getProperties().entrySet()){
+                        Property depProperty = to.getState().getProperties().get(providerPropertyEntry.getKey());
+                        if ((depProperty!=null) && (depProperty.getProvider()!=null)){
+                            dependencies.add(depProperty.getName());
+                        }
+                    }
+
+                    if (dependencies.isEmpty()){
+                        orderedProperties.add(property);
+                    }else {
+                        dependentProviderProperties.put(propertyEntry.getKey(), dependencies);
+                    }
+                }
+            }
+        }
+
+        if (!dependentProviderProperties.isEmpty()) {
+            Set<String> order = new TreeSet<>();
+            for ( String propertyName : dependentProviderProperties.keySet() ){
+                if(dependentProviderProperties.containsKey(propertyName)) {
+                    order.addAll(getPropertyWithDependencies(dependentProviderProperties, propertyName));
+                }
+            }
+            for (String orderedProperty : order){
+                Property p = to.getState().getProperties().get(orderedProperty);
+                orderedProperties.add(p);
+            }
+        }
+
+        for (Property property : orderedProperties){
             if (property != null){
                 if (property.getProvider() != null){
                     State providerState = property.getProvider();

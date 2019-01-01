@@ -187,14 +187,16 @@ public class Validator {
                         String symbolName = childSymbol.getName();
                         Property property = null;
                         State provider = null;
+                        Map<String, String> providerMapping = null;
                         boolean optional = stopFieldSymbol.isOptional();
                         if ( stopFieldSymbol.getAsyncSource() != null){
                             provider = states.get(stopFieldSymbol.getAsyncSource());
+
                         }
                         if(childSymbol instanceof ModelFieldSymbol) {
                             State fieldState = states.get(stopFieldSymbol.getTypeName());
                             if (fieldState != null) {
-                                property = new StateProperty(symbolName, fieldState, false, provider, optional);
+                                property = new StateProperty(symbolName, fieldState, false, provider, optional, ((ModelFieldSymbol)childSymbol).getAsyncMapping());
                             }
                             Enumeration enumeration = enumerations.get(stopFieldSymbol.getTypeName());
                             if(enumeration!=null){
@@ -206,14 +208,14 @@ public class Validator {
                             if (collectionFieldSymbol.isState()){
                                 String typeName = collectionFieldSymbol.getTypeName();
                                 State fieldState = states.get(typeName);
-                                property = new StateProperty(symbolName, fieldState, true, provider, optional);
+                                property = new StateProperty(symbolName, fieldState, true, provider, optional, collectionFieldSymbol.getAsyncMapping());
                             }else {
                                 Enumeration enumeration = enumerations.get(collectionFieldSymbol.getTypeName());
                                 if(enumeration!=null){
                                     property = new EnumerationProperty(symbolName, enumeration, false, provider, optional);
                                 }else {
                                     propertyType = getPropertyType(collectionFieldSymbol.getTypeName());
-                                    property = new Property(symbolName, propertyType, true, provider, optional);
+                                    property = new Property(symbolName, propertyType, true, provider, optional, collectionFieldSymbol.getAsyncMapping());
                                 }
                             }
                         }else if (childSymbol instanceof ScalarFieldSymbol){
@@ -221,7 +223,7 @@ public class Validator {
                             Property.PropertyType propertyType = getPropertyType(scalarFieldSymbol.getTypeName());
 
                             if(propertyType!=null){
-                                property = new Property(symbolName, propertyType, false, provider, optional);
+                                property = new Property(symbolName, propertyType, false, provider, optional, scalarFieldSymbol.getAsyncMapping());
                             }
                         }
                         if (property!=null){

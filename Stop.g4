@@ -75,7 +75,19 @@ field
 	;
 
 async_source
-    : RETURN_OP MODEL_TYPE
+    : RETURN_OP MODEL_TYPE (async_source_mapping)?
+    ;
+
+async_source_mapping
+    : '(' async_source_mapping_parameter (',' async_source_mapping_parameter)* ')'
+    ;
+
+async_source_mapping_parameter
+    : ID ':' async_source_mapping_parameter_rename
+    ;
+
+async_source_mapping_parameter_rename
+    : ID
     ;
 
 type

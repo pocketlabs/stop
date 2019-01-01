@@ -1,4 +1,4 @@
-// Generated from /Users/kyleshank/git/stop/Stop.g4 by ANTLR 4.7
+// Generated from /Users/kyleshank/git/stop/Stop.g4 by ANTLR 4.7.2
 package org.stop_lang.parser;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -187,6 +187,36 @@ public interface StopListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAsync_source(StopParser.Async_sourceContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link StopParser#async_source_mapping}.
+	 * @param ctx the parse tree
+	 */
+	void enterAsync_source_mapping(StopParser.Async_source_mappingContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link StopParser#async_source_mapping}.
+	 * @param ctx the parse tree
+	 */
+	void exitAsync_source_mapping(StopParser.Async_source_mappingContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link StopParser#async_source_mapping_parameter}.
+	 * @param ctx the parse tree
+	 */
+	void enterAsync_source_mapping_parameter(StopParser.Async_source_mapping_parameterContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link StopParser#async_source_mapping_parameter}.
+	 * @param ctx the parse tree
+	 */
+	void exitAsync_source_mapping_parameter(StopParser.Async_source_mapping_parameterContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link StopParser#async_source_mapping_parameter_rename}.
+	 * @param ctx the parse tree
+	 */
+	void enterAsync_source_mapping_parameter_rename(StopParser.Async_source_mapping_parameter_renameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link StopParser#async_source_mapping_parameter_rename}.
+	 * @param ctx the parse tree
+	 */
+	void exitAsync_source_mapping_parameter_rename(StopParser.Async_source_mapping_parameter_renameContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link StopParser#type}.
 	 * @param ctx the parse tree

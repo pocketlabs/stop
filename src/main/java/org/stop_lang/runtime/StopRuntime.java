@@ -226,10 +226,10 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
             if (property != null){
                 if (property.getProvider() != null){
                     State providerState = property.getProvider();
-                    if (property.isOptional() && !shouldMapProvider(to, providerState)){
+                    if (property.isOptional() && !shouldMapProvider(to, property, providerState)){
                         continue;
                     }
-                    StateInstance providerStateInstance = mapStateInstancePropertiesToProvider(to, providerState);
+                    StateInstance providerStateInstance = mapStateInstancePropertiesToProvider(to, providerState, property.getProviderMapping());
                     providerStateInstance.validateProperties();
                     T providerImplementationInstance = implementation.buildImplementationInstance(providerStateInstance);
 
@@ -351,19 +351,34 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
         }
     }
 
-    private StateInstance mapStateInstancePropertiesToProvider(StateInstance stateInstance, State providerState){
+    private StateInstance mapStateInstancePropertiesToProvider(StateInstance stateInstance, State providerState, Map<String, String> providerMapping){
         Map<String, Object> providerProperties = new HashMap<>();
-        for (Map.Entry<String, Object> stateInstanceEntry : stateInstance.getProperties().entrySet()){
-            if (providerState.getProperties().containsKey(stateInstanceEntry.getKey())){
-                providerProperties.put(stateInstanceEntry.getKey(), stateInstanceEntry.getValue());
+
+        for (Map.Entry<String, Property> providerPropertyEntry : providerState.getProperties().entrySet()){
+            String field = providerPropertyEntry.getKey();
+
+            if (providerMapping!=null){
+                if (providerMapping.containsKey(field)){
+                    field = providerMapping.get(field);
+                }
+            }
+
+            if ( stateInstance.getProperties().containsKey(field)) {
+                providerProperties.put(providerPropertyEntry.getKey(), stateInstance.getProperties().get(field));
             }
         }
+
         return new StateInstance(providerState, providerProperties);
     }
 
-    private boolean shouldMapProvider(StateInstance stateInstance, State providerState){
+    private boolean shouldMapProvider(StateInstance stateInstance, Property stateInstanceProperty, State providerState){
         for (Map.Entry<String, Property> providerStatePropertyEntry : providerState.getProperties().entrySet()){
             String propertyName = providerStatePropertyEntry.getKey();
+            if (stateInstanceProperty.getProviderMapping() != null){
+                if (stateInstanceProperty.getProviderMapping().containsKey(propertyName)){
+                    propertyName = stateInstanceProperty.getProviderMapping().get(propertyName);
+                }
+            }
             Property stateProperty = stateInstance.getState().getProperties().get(propertyName);
             if (stateProperty != null){
                 if (stateProperty.isOptional() && (stateInstance.getProperties().get(propertyName)==null)){

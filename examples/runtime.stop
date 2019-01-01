@@ -36,8 +36,8 @@ B {
     string test2
     string dynamicText <- GetDynamicText
     [Post] posts <- GetPosts
-    optional string filter
-    optional [Post] filteredPosts <- GetFilteredPosts
+    optional string query
+    optional [Post] filteredPosts <- GetFilteredPosts(filter: query)
     -> C
 }
 

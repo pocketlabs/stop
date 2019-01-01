@@ -40,6 +40,7 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
         if (implementationInstance.getName().equalsIgnoreCase("A")){
             HelloRuntimeBase b = new HelloRuntimeBase("B");
             b.put("test2", "test2");
+            b.put("query", "yes");
             return b;
         }
         if (implementationInstance.getName().equalsIgnoreCase("B")) {

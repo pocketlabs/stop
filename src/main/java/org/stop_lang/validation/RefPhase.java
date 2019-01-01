@@ -7,13 +7,12 @@ import org.antlr.symtab.Symbol;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.stop_lang.parser.StopBaseListener;
 import org.stop_lang.parser.StopParser;
-import org.stop_lang.symbols.CollectionFieldSymbol;
-import org.stop_lang.symbols.EnumSymbol;
-import org.stop_lang.symbols.ModelFieldSymbol;
-import org.stop_lang.symbols.ModelSymbol;
+import org.stop_lang.symbols.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RefPhase extends StopBaseListener {
     ParseTreeProperty<Scope> scopes;
@@ -91,6 +90,43 @@ public class RefPhase extends StopBaseListener {
                                     name +"\" because "
                                     + typeString + " doesn't match async return type of "
                                     + theModelSymbol.getReturnTypeString()));
+                            System.err.println();
+                        }
+                    }
+                }
+
+                for( Symbol modelSymbolSymbol : theModelSymbol.getAllSymbols()){
+                    if (modelSymbolSymbol instanceof StopFieldSymbol){
+                        StopFieldSymbol fieldSymbol = (StopFieldSymbol)modelSymbolSymbol;
+                        String fieldName = fieldSymbol.getName();
+
+                        if (symbol instanceof StopFieldSymbol) {
+                            Map<String, String> asyncSourceMapping = ((StopFieldSymbol)symbol).getAsyncMapping();
+                            if (asyncSourceMapping != null) {
+                                for (Map.Entry<String, String> mappingEntry : asyncSourceMapping.entrySet()) {
+                                    if (mappingEntry.getKey().equalsIgnoreCase(fieldName)) {
+                                        fieldName = mappingEntry.getValue();
+                                    }
+                                }
+                            }
+                        }
+
+                        Symbol currentScopeProperty = currentScope.resolve(fieldName);
+                        if ((currentScopeProperty!= null) && (currentScopeProperty instanceof StopFieldSymbol)){
+                            StopFieldSymbol currentScopeFieldSymbol = (StopFieldSymbol)currentScopeProperty;
+
+                            if (!currentScopeFieldSymbol.getTypeName().equals(fieldSymbol.getTypeName())){
+                                errors.add(new StopValidationException("Couldn't define field \""+
+                                        name +"\" because "
+                                        + fieldSymbol.getName() + " mapping to "+fieldName+" doesn't match required type "
+                                        + fieldSymbol.getTypeName()));
+                                System.err.println();
+                            }
+                        }else if (!fieldSymbol.isOptional()){
+                            errors.add(new StopValidationException("Couldn't define field \""+
+                                    name +"\" because "
+                                    + fieldSymbol.getName() + " cannot be mapped within "
+                                    + currentScope.getName()));
                             System.err.println();
                         }
                     }

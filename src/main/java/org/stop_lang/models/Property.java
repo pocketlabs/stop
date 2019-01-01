@@ -2,6 +2,7 @@ package org.stop_lang.models;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
+import java.util.Map;
 
 public class Property {
     public enum PropertyType {
@@ -30,6 +31,7 @@ public class Property {
     protected State provider;
     protected boolean collection;
     protected boolean optional;
+    private Map<String, String> providerMapping;
 
     public Property(String name, PropertyType type, boolean collection, State provider, boolean optional){
         this.name = name;
@@ -37,6 +39,15 @@ public class Property {
         this.provider = provider;
         this.collection = collection;
         this.optional = optional;
+    }
+
+    public Property(String name, PropertyType type, boolean collection, State provider, boolean optional, Map<String, String> providerMapping){
+        this.name = name;
+        this.type = type;
+        this.provider = provider;
+        this.collection = collection;
+        this.optional = optional;
+        this.providerMapping = providerMapping;
     }
 
     public String getName(){
@@ -139,5 +150,9 @@ public class Property {
         }
 
         return PropertyType.STATE;
+    }
+
+    public Map<String, String> getProviderMapping(){
+        return this.providerMapping;
     }
 }

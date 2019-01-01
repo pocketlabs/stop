@@ -27,7 +27,6 @@ public class RuntimeTest {
         startInstance.put("test1", "hey now");
         HelloRuntimeBase stop = runtime.getRuntime().start(startInstance);
         assert(stop!=null);
-//        assertEquals(stop.getName(), "C");
     }
 
 //    @Test

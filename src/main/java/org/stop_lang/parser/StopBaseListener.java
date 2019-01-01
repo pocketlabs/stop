@@ -1,4 +1,4 @@
-// Generated from /Users/kyleshank/git/stop/Stop.g4 by ANTLR 4.7
+// Generated from /Users/kyleshank/git/stop/Stop.g4 by ANTLR 4.7.2
 package org.stop_lang.parser;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -227,6 +227,42 @@ public class StopBaseListener implements StopListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAsync_source(StopParser.Async_sourceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAsync_source_mapping(StopParser.Async_source_mappingContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAsync_source_mapping(StopParser.Async_source_mappingContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAsync_source_mapping_parameter(StopParser.Async_source_mapping_parameterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAsync_source_mapping_parameter(StopParser.Async_source_mapping_parameterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAsync_source_mapping_parameter_rename(StopParser.Async_source_mapping_parameter_renameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAsync_source_mapping_parameter_rename(StopParser.Async_source_mapping_parameter_renameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

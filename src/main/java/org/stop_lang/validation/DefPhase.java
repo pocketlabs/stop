@@ -9,7 +9,9 @@ import org.stop_lang.parser.StopParser;
 import org.stop_lang.symbols.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DefPhase extends StopBaseListener {
     public ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
@@ -93,6 +95,15 @@ public class DefPhase extends StopBaseListener {
             if (ctx.async_source() != null){
                 String asyncModel = ctx.async_source().MODEL_TYPE().getText();
                 field.setAsyncSource(asyncModel);
+
+                if (ctx.async_source().async_source_mapping() != null){
+                    Map<String, String> asyncSourceMapping = new HashMap<String, String>();
+                    for (StopParser.Async_source_mapping_parameterContext parameterContext :
+                            ctx.async_source().async_source_mapping().async_source_mapping_parameter()){
+                        asyncSourceMapping.put(parameterContext.ID().getText(), parameterContext.async_source_mapping_parameter_rename().ID().getText());
+                    }
+                    field.setAsyncMapping(asyncSourceMapping);
+                }
             }
             if ( ctx.OPTIONAL() != null){
                 field.setOptional(true);

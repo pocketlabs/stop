@@ -122,6 +122,15 @@ public class RefPhase extends StopBaseListener {
                                         + fieldSymbol.getTypeName()));
                                 System.err.println();
                             }
+
+                            if (symbol instanceof  StopFieldSymbol) {
+                                if (((StopFieldSymbol) currentScopeProperty).isOptional() && !((StopFieldSymbol) symbol).isOptional()) {
+                                    errors.add(new StopValidationException("Couldn't define field \""+
+                                            name +"\" because "
+                                            + fieldName + " is optional and "+symbol.getName()+" is not optional"));
+                                    System.err.println();
+                                }
+                            }
                         }else if (!fieldSymbol.isOptional()){
                             errors.add(new StopValidationException("Couldn't define field \""+
                                     name +"\" because "

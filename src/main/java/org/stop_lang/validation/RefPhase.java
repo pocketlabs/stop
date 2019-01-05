@@ -106,6 +106,7 @@ public class RefPhase extends StopBaseListener {
                                 for (Map.Entry<String, String> mappingEntry : asyncSourceMapping.entrySet()) {
                                     if (mappingEntry.getKey().equalsIgnoreCase(fieldName)) {
                                         fieldName = mappingEntry.getValue();
+                                        break;
                                     }
                                 }
                             }
@@ -124,7 +125,9 @@ public class RefPhase extends StopBaseListener {
                             }
 
                             if (symbol instanceof  StopFieldSymbol) {
-                                if (((StopFieldSymbol) currentScopeProperty).isOptional() && !((StopFieldSymbol) symbol).isOptional()) {
+                                if (currentScopeFieldSymbol.isOptional()
+                                        && !fieldSymbol.isOptional()
+                                        && !((StopFieldSymbol) symbol).isOptional()) {
                                     errors.add(new StopValidationException("Couldn't define field \""+
                                             name +"\" because "
                                             + fieldName + " is optional and "+symbol.getName()+" is not optional"));

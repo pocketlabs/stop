@@ -216,18 +216,22 @@ public class RefPhase extends StopBaseListener {
                 }
 
                 if (fieldCount > 0) {
-                    Symbol timedOutStateSymbol = theModelSymbol.resolve("timedOutState");
-                    if (timedOutStateSymbol != null) {
-                        if (timedOutStateSymbol instanceof ModelFieldSymbol) {
-                            ModelFieldSymbol fieldSymbol = (ModelFieldSymbol) timedOutStateSymbol;
-                            if (!fieldSymbol.getTypeName().equals(currentScope.getName())) {
-                                errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState has type " + fieldSymbol.getTypeName() + " instead of " + currentScope.getName()));
+                    if(fieldCount == 1) {
+                        Symbol timedOutStateSymbol = theModelSymbol.resolve("timedOutState");
+                        if (timedOutStateSymbol != null) {
+                            if (timedOutStateSymbol instanceof ModelFieldSymbol) {
+                                ModelFieldSymbol fieldSymbol = (ModelFieldSymbol) timedOutStateSymbol;
+                                if (!fieldSymbol.getTypeName().equals(currentScope.getName())) {
+                                    errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState has type " + fieldSymbol.getTypeName() + " instead of " + currentScope.getName()));
+                                }
+                            } else {
+                                errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState isn't defined as type " + currentScope.getName()));
                             }
                         } else {
-                            errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState isn't defined as type " + currentScope.getName()));
+                            errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState not defined"));
                         }
-                    } else {
-                        errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState not defined"));
+                    }else{
+                        errors.add(new StopValidationException("Couldn't define timeout transition because only the timedOutState property can be defined"));
                     }
                 }
             }

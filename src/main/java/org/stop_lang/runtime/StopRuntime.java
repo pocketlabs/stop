@@ -132,8 +132,11 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                     future.cancel(true);
                     if (asyncState.getTimeoutTransition()!=null){
                         Map<String, Object> props = new HashMap<String, Object>();
-                        props.put("timedOutState", stateInstance);
-                        StateInstance errorStateInstance = asyncState.getTimeoutTransition().buildInstance(props);
+                        State timeoutState = asyncState.getTimeoutTransition();
+                        if (timeoutState.getProperties().containsKey("timedOutState")) {
+                            props.put("timedOutState", stateInstance);
+                        }
+                        StateInstance errorStateInstance = timeoutState.buildInstance(props);
                         return transition(stateInstance, errorStateInstance);
                     }
                     throw new StopRuntimeException(e.getMessage());
@@ -264,8 +267,11 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                                     future.cancel(true);
                                     if (asyncProviderState.getTimeoutTransition()!=null){
                                         Map<String, Object> props = new HashMap<String, Object>();
-                                        props.put("timedOutState", providerStateInstance);
-                                        StateInstance errorStateInstance = asyncProviderState.getTimeoutTransition().buildInstance(props);
+                                        State timeoutState = asyncProviderState.getTimeoutTransition();
+                                        if (timeoutState.getProperties().containsKey("timedOutState")) {
+                                            props.put("timedOutState", providerStateInstance);
+                                        }
+                                        StateInstance errorStateInstance = timeoutState.buildInstance(props);
                                         throw new StopRuntimeErrorException(errorStateInstance);
                                     }
                                     throw new StopRuntimeException(e.getMessage());
@@ -311,8 +317,11 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                                     future.cancel(true);
                                     if (asyncProviderState.getTimeoutTransition()!=null){
                                         Map<String, Object> props = new HashMap<String, Object>();
-                                        props.put("timedOutState", providerStateInstance);
-                                        StateInstance errorStateInstance = asyncProviderState.getTimeoutTransition().buildInstance(props);
+                                        State timeoutState = asyncProviderState.getTimeoutTransition();
+                                        if (timeoutState.getProperties().containsKey("timedOutState")) {
+                                            props.put("timedOutState", providerStateInstance);
+                                        }
+                                        StateInstance errorStateInstance = timeoutState.buildInstance(props);
                                         throw new StopRuntimeErrorException(errorStateInstance);
                                     }
                                     throw new StopRuntimeException(e.getMessage());

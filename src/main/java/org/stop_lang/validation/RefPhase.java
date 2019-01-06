@@ -206,6 +206,19 @@ public class RefPhase extends StopBaseListener {
             }
             if (modelSymbol instanceof ModelSymbol) {
                 ModelSymbol theModelSymbol = (ModelSymbol) modelSymbol;
+
+                boolean hasNoFields = true;
+
+                for(Symbol theModelSymbolSymbol : theModelSymbol.getAllSymbols()){
+                    if (theModelSymbolSymbol instanceof StopFieldSymbol){
+                        hasNoFields = false;
+                    }
+                }
+
+                if (hasNoFields){
+                    return;
+                }
+
                 Symbol timedOutStateSymbol = theModelSymbol.resolve("timedOutState");
                 if (timedOutStateSymbol != null){
                     if (timedOutStateSymbol instanceof ModelFieldSymbol){
@@ -214,7 +227,7 @@ public class RefPhase extends StopBaseListener {
                             errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState has type " + fieldSymbol.getTypeName() + " instead of " + currentScope.getName()));
                         }
                     }else {
-                        errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState isn't defined"));
+                        errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState isn't defined as type "+ currentScope.getName()));
                     }
                 }else{
                     errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState not defined"));

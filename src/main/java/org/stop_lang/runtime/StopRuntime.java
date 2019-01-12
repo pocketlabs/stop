@@ -11,6 +11,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
     private StopRuntimeImplementation<T> implementation;
     private ExecutorService executor;
     private StateInstance currentStateInstance = null;
+    private List<StateInstance> orderedStates = new ArrayList<StateInstance>();
 
     public StopRuntime(Stop stop, StopRuntimeImplementation<T> implementation){
         this.stop = stop;
@@ -59,7 +60,13 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
         implementation.log(message);
     }
 
+    public List<StateInstance> getOrderedStates(){
+        return this.orderedStates;
+    }
+
     private T start(StateInstance to) throws StopRuntimeException, StopValidationException {
+        orderedStates.clear();
+
         if (to == null){
             throw new StopRuntimeException("To state instances must be defined");
         }
@@ -101,6 +108,8 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
         stateInstance.validateProperties();
 
         currentStateInstance = stateInstance;
+
+        orderedStates.add(stateInstance);
 
         T implementationInstance = implementation.buildImplementationInstance(stateInstance);
 

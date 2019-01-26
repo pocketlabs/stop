@@ -134,7 +134,7 @@ public class RefPhase extends StopBaseListener {
                                     System.err.println();
                                 }
                             }
-                        }else if (!fieldSymbol.isOptional()){
+                        }else if ((fieldSymbol.getAsyncSource()==null) && !fieldSymbol.isOptional()){
                             errors.add(new StopValidationException("Couldn't define field \""+
                                     name +"\" because "
                                     + fieldSymbol.getName() + " cannot be mapped within "

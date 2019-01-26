@@ -56,7 +56,11 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
     public Object executeAndReturnValue(HelloRuntimeBase implementationInstance, StopRuntimeImplementationExecution<HelloRuntimeBase> execution) throws StopRuntimeErrorException {
         System.out.println("executeAndReturnValue! " + implementationInstance.getName());
         if (implementationInstance.getName().equalsIgnoreCase("GetDynamicText")) {
+            System.out.println(implementationInstance.values());
             return "DYNAMIC TEXT";
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("GetLayout")) {
+            return "LAYOUT TEXT";
         }
         return null;
     }

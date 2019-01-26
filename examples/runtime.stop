@@ -5,6 +5,11 @@ start A {
 
 GetDynamicText <- string {
     string test2
+    string layout <- GetLayout
+}
+
+GetLayout <- string {
+
 }
 
 Post {

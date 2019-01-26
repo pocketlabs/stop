@@ -242,6 +242,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                         continue;
                     }
                     StateInstance providerStateInstance = mapStateInstancePropertiesToProvider(to, providerState, property.getProviderMapping());
+                    gatherDynamicProperties(providerStateInstance);
                     providerStateInstance.validateProperties();
                     T providerImplementationInstance = implementation.buildImplementationInstance(providerStateInstance);
 
@@ -349,6 +350,16 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                         }
 
                         if (value != null) {
+                            if (value instanceof Collection){
+                                Collection instances = (Collection)value;
+                                for (Object instance : instances){
+                                    if (instance instanceof StateInstance){
+                                        gatherDynamicProperties((StateInstance)instance);
+                                    }
+                                }
+                            }else if(value instanceof StateInstance){
+                                gatherDynamicProperties((StateInstance)value);
+                            }
                             to.getProperties().put(property.getName(), value);
                         }
                     }catch(StopRuntimeErrorException errorException){

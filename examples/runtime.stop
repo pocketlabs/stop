@@ -3,6 +3,10 @@ start A {
     -> B
 }
 
+start Z {
+    -> Y
+}
+
 GetDynamicText <- string {
     string test2
     string layout <- GetLayout
@@ -12,12 +16,36 @@ GetLayout <- string {
 
 }
 
+Configuration {
+    string host
+}
+
+GetConfiguration <- Configuration {
+
+}
+
+GetDownloadURL <- string {
+    string filename
+    Configuration configuration <- GetConfiguration
+}
+
 Post {
+    enum Status {
+        DRAFT
+        PUBLISHED
+    }
     string title
+    optional Status status
+    optional string filename
+    optional string url <- GetDownloadURL
 }
 
 async GetPosts <- [Post] throws DatabaseError {
     timeout 10 -> GetPostsTimeoutError
+}
+
+async GetTimedOutPosts <- [Post] throws DatabaseError {
+    timeout 1 -> GetTimedOutPostsError
 }
 
 async GetFilteredPosts <- [Post] throws DatabaseError {
@@ -37,6 +65,9 @@ stop GetFilteredPostsTimeoutError {
     GetFilteredPosts timedOutState
 }
 
+stop GetTimedOutPostsError {
+}
+
 B {
     string test2
     string dynamicText <- GetDynamicText
@@ -46,6 +77,15 @@ B {
     -> C
 }
 
+Y {
+    [Post] posts <- GetTimedOutPosts
+    -> C
+}
+
 stop C {
     string test3
+}
+
+Iso {
+
 }

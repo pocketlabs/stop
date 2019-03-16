@@ -1,0 +1,29 @@
+start A {
+    enum Type {
+        ONE
+        TWO
+        THREE
+    }
+    enum Status {
+        DRAFT
+        PUBLISHED
+    }
+    Type type
+    string name
+    [string] collection
+    optional Circle circle
+    optional [Type] types
+    -> B
+}
+
+stop B {
+
+}
+
+Circle {
+    double radius
+}
+
+Square {
+
+}

@@ -1,7 +1,6 @@
-package org.stop_lang.runtime.tests.helloworld;
+package org.stop_lang.tests.runtime.helloworld;
 
-import org.stop_lang.models.StateInstance;
-import org.stop_lang.models.Stop;
+import org.stop_lang.models.*;
 import org.stop_lang.runtime.*;
 
 import java.io.IOException;
@@ -49,6 +48,10 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
             c.put("test3", "test3");
             return c;
         }
+        if (implementationInstance.getName().equalsIgnoreCase("Z")) {
+            HelloRuntimeBase y = new HelloRuntimeBase("Y");
+            return y;
+        }
         return null;
     }
 
@@ -62,6 +65,14 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
         if (implementationInstance.getName().equalsIgnoreCase("GetLayout")) {
             return "LAYOUT TEXT";
         }
+        if (implementationInstance.getName().equalsIgnoreCase("GetConfiguration")) {
+            HelloRuntimeBase c = new HelloRuntimeBase("Configuration");
+            c.put("host", "http://test.com");
+            return c;
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("GetDownloadURL")) {
+            return "http://test.com/download.zip";
+        }
         return null;
     }
 
@@ -69,12 +80,18 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
     public Collection executeAndReturnCollection(HelloRuntimeBase implementationInstance, StopRuntimeImplementationExecution<HelloRuntimeBase> execution) throws StopRuntimeErrorException {
         System.out.println("executeAndReturnCollection! " + implementationInstance.getName());
         if (implementationInstance.getName().equalsIgnoreCase("GetPosts")) {
-//            HelloRuntimeBase databaseError = new HelloRuntimeBase("DatabaseError");
-//            StateInstance err = this.buildStateInstance(databaseError);
-//            throw new StopRuntimeErrorException(err);
-            
             HelloRuntimeBase post = new HelloRuntimeBase("Post");
             post.put("title", "Hey!");
+            post.put("filename", "download.zip");
+            List<String> statusValues = new ArrayList<>();
+            statusValues.add("DRAFT");
+            statusValues.add("PUBLISHED");
+            try {
+                EnumerationInstance statusInstance = new EnumerationInstance(new Enumeration("Status", statusValues), "PUBLISHED");
+                post.put("status", statusInstance);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
             List<HelloRuntimeBase> posts = new ArrayList<>();
             posts.add(post);
             return posts;
@@ -85,6 +102,13 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
             List<HelloRuntimeBase> posts = new ArrayList<>();
             posts.add(post);
             return posts;
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("GetTimedOutPosts")) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

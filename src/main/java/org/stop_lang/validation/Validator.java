@@ -19,14 +19,10 @@ public class Validator {
         return validate(input);
     }
 
-    public static boolean validate(CharStream input) {
+    public static boolean
+    validate(CharStream input) {
         Map<String, State> states = getStates(input);
         return states != null;
-    }
-
-    public static Map<String, State>  getStates(String filename) throws IOException {
-        CharStream input = CharStreams.fromFileName(filename);
-        return getStates(input);
     }
 
     public static Map<String, State> getStates(CharStream input) {
@@ -83,7 +79,7 @@ public class Validator {
                 ModelSymbol modelSymbol = (ModelSymbol)symbol;
                 String name = modelSymbol.getName();
                 if (modelSymbol.getAsync()){
-                    AsyncState asyncState = new AsyncState(name, modelSymbol.timeout);
+                    AsyncState asyncState = new AsyncState(name, modelSymbol.getTimeout());
                     states.put(name, asyncState);
                 }else{
                     State.StateType type = State.StateType.SYNC;

@@ -1,0 +1,5 @@
+include "./NotFound.stop"
+
+A {
+
+}

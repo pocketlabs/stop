@@ -1,0 +1,19 @@
+A {
+    string test <- GetAsyncString
+}
+
+async GetAsyncString <- string {
+
+}
+
+async AnotherAsyncState <- string {
+    timeout 0 -> TimeoutError
+}
+
+async AnotherGoodAsyncState <- string {
+    timeout 1 -> TimeoutError
+}
+
+stop TimeoutError {
+
+}

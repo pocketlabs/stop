@@ -293,7 +293,8 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                             if (providerState.getReturnState() != null) {
                                 List<StateInstance> stateInstances = new ArrayList<StateInstance>();
                                 for (Object collectionElement : collection) {
-                                    stateInstances.add(implementation.buildStateInstance((T) collectionElement));
+                                    StateInstance si = implementation.buildStateInstance((T) collectionElement);
+                                    stateInstances.add(si);
                                 }
                                 value = stateInstances;
                             } else {
@@ -402,6 +403,14 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
 
     private boolean shouldMapProvider(StateInstance stateInstance, Property stateInstanceProperty, State providerState){
         for (Map.Entry<String, Property> providerStatePropertyEntry : providerState.getProperties().entrySet()){
+            Property providerStatePropertyEntryProperty = providerStatePropertyEntry.getValue();
+            if (providerStatePropertyEntryProperty!= null){
+                if (providerStatePropertyEntryProperty.getProvider()!=null){
+                    if (providerStatePropertyEntryProperty.getProvider().getProperties().isEmpty()){
+                        continue;
+                    }
+                }
+            }
             String propertyName = providerStatePropertyEntry.getKey();
             if (stateInstanceProperty.getProviderMapping() != null){
                 if (stateInstanceProperty.getProviderMapping().containsKey(propertyName)){

@@ -16,7 +16,7 @@ public class ModelSymbol extends SymbolWithScope {
     private List<String> errorTypes = new ArrayList<String>();
     private List<String> transitions = new ArrayList<String>();
     private List<String> enqueue = new ArrayList<String>();
-    public int timeout = 0;
+    private int timeout = 0;
     private String timeoutTransition = null;
     private String returnType = null;
     private boolean returnCollection = false;

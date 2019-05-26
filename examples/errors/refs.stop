@@ -1,0 +1,19 @@
+A throws B {
+
+}
+
+C {
+    -> D
+}
+
+E {
+    >> NoQueue
+    }
+
+Dynamic <- NoState {
+
+}
+
+DynamicCollection <- [NoState]{
+
+}

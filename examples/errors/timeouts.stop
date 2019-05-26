@@ -1,0 +1,41 @@
+async A {
+    timeout 30 -> TimeoutError
+}
+
+B {
+
+}
+
+async C {
+    timeout 3 -> TimeoutError2
+}
+
+async D {
+    timeout 4 -> TimeoutError3
+}
+
+async E {
+    timeout 6 -> TimeoutError4
+}
+
+async F {
+    timeout 8 -> TimeoutError5
+}
+
+TimeoutError {
+    B timedOutState
+}
+
+TimeoutError2 {
+    string message
+}
+
+TimeoutError3 {
+    bool a
+    string b
+    int32 c
+}
+
+TimeoutError4 {
+    string timedOutState
+}

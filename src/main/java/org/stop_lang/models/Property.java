@@ -117,6 +117,8 @@ public class Property {
 
     public static PropertyType getPropertyType(String type){
         switch(type){
+            case "double":
+                return PropertyType.DOUBLE;
             case "float":
                 return PropertyType.FLOAT;
             case "int32":

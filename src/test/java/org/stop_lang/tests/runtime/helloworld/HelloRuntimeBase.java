@@ -1,4 +1,4 @@
-package org.stop_lang.runtime.tests.helloworld;
+package org.stop_lang.tests.runtime.helloworld;
 
 import java.util.HashMap;
 

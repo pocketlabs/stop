@@ -1,19 +1,13 @@
-package org.stop_lang.runtime.tests;
+package org.stop_lang.tests.runtime;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import org.stop_lang.models.*;
-import org.stop_lang.runtime.StopRuntime;
+import org.stop_lang.models.StateInstance;
 import org.stop_lang.runtime.StopRuntimeException;
-import org.stop_lang.runtime.tests.helloworld.HelloRuntime;
-import org.stop_lang.runtime.tests.helloworld.HelloRuntimeBase;
-import org.stop_lang.validation.Validator;
+import org.stop_lang.tests.runtime.helloworld.HelloRuntime;
+import org.stop_lang.tests.runtime.helloworld.HelloRuntimeBase;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,7 +20,41 @@ public class RuntimeTest {
         HelloRuntimeBase startInstance = new HelloRuntimeBase("A");
         startInstance.put("test1", "hey now");
         HelloRuntimeBase stop = runtime.getRuntime().start(startInstance);
-        assert(stop!=null);
+        Assert.assertNotNull(stop);
+        Assert.assertNotNull(runtime.getRuntime().getStop());
+
+        List<StateInstance> orderedStates = runtime.getRuntime().getOrderedStates();
+        Assert.assertTrue(orderedStates.size() == 3);
+    }
+
+    @Test
+    public void timeout() throws Exception {
+        HelloRuntime runtime = new HelloRuntime();
+        HelloRuntimeBase startInstance = new HelloRuntimeBase("Z");
+        HelloRuntimeBase stop = runtime.getRuntime().start(startInstance);
+        Assert.assertNotNull(stop);
+        Assert.assertNotNull(runtime.getRuntime().getStop());
+    }
+
+    @Test
+    public void badStart() throws Exception {
+        HelloRuntime runtime = new HelloRuntime();
+        HelloRuntimeBase startInstance = new HelloRuntimeBase("Y");
+        try {
+            HelloRuntimeBase stop = runtime.getRuntime().start(startInstance);
+            Assert.fail();
+        }catch(StopRuntimeException e){
+            // GOod
+        }
+
+        HelloRuntime runtime2 = new HelloRuntime();
+        HelloRuntimeBase startInstance2 = new HelloRuntimeBase("Iso");
+        try {
+            HelloRuntimeBase stop2 = runtime2.getRuntime().start(startInstance2);
+            Assert.fail();
+        }catch(StopRuntimeException e){
+            // GOod
+        }
     }
 
 //    @Test

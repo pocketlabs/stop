@@ -1,0 +1,23 @@
+A {
+    double a
+    float b
+    int32 c
+    int64 d
+    uint32 e
+    uint64 f
+    sint32 g
+    sint64 h
+    fixed32 i
+    fixed64 j
+    sfixed32 k
+    sfixed64 l
+    bool m
+    string n
+    bytes o
+    timestamp p
+    -> B
+}
+
+stop B {
+
+}

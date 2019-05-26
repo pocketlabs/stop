@@ -1,0 +1,50 @@
+start Request {
+    -> Posts
+}
+
+stop Posts {
+    [Post] posts
+    optional User currentUser
+    optional string fuck
+    optional string dingus
+    optional User realUser
+    bool boolTest
+}
+
+Post {
+    string title
+    string body
+    string description
+    [string] tags
+    optional string fuckface
+    optional User user
+
+}
+
+PostItemComponent {
+    string title
+    string body
+    optional string short_description
+    optional int32 integer
+    optional bool booly
+    optional User user
+}
+
+PostComponent {
+    Post post
+}
+
+FooterComponent {
+
+}
+
+Text {
+    string text
+    optional [string] values
+    optional [int32] nums
+}
+
+User {
+    string name
+    optional [string] aliases
+}

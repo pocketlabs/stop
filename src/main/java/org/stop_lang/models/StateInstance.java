@@ -87,7 +87,9 @@ public class StateInstance {
                     }
                 }else {
                     if (!property.getClassType().equals(value.getClass())) {
-                        throw new StopValidationException("Invalid value for " + entry.getKey());
+                        if ( !((value instanceof EnumerationInstance) && property.getClassType().equals(String.class)) ){
+                            throw new StopValidationException("Invalid value for " + entry.getKey());
+                        }
                     }
 
                     if ( property instanceof StateProperty ){

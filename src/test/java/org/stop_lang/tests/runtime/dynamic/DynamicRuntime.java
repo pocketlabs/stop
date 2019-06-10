@@ -6,7 +6,9 @@ import org.stop_lang.runtime.*;
 import org.stop_lang.tests.runtime.helloworld.HelloRuntimeBase;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class DynamicRuntime implements StopRuntimeImplementation<DynamicRuntimeBase> {
     private Stop stop;
@@ -58,6 +60,21 @@ public class DynamicRuntime implements StopRuntimeImplementation<DynamicRuntimeB
         }
         if (implementationInstance.getName().equalsIgnoreCase("GetD")){
             return "GetD";
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("GetE")){
+            int n = 10;
+            List<StateInstance> fs = new ArrayList<>();
+            for (int i = 0; i < n; i++){
+                DynamicRuntimeBase f = new DynamicRuntimeBase("F");
+                f.put("g", "g");
+                fs.add(buildStateInstance(f));
+            }
+            DynamicRuntimeBase e = new DynamicRuntimeBase("E");
+            e.put("f", fs);
+            return e;
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("GetH")){
+            return "GetH";
         }
         return null;
     }

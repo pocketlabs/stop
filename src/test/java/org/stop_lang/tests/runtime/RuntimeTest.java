@@ -78,5 +78,12 @@ public class RuntimeTest {
         Assert.assertEquals("GetC", stop.get("c"));
         Assert.assertNotNull(stop.get("d"));
         Assert.assertEquals("GetD", stop.get("d"));
+        Assert.assertNotNull(stop.get("e"));
+        StateInstance e = (StateInstance)stop.get("e");
+        Assert.assertNotNull(e.getProperties().get("f"));
+        for (StateInstance f : (List<StateInstance>)e.getProperties().get("f")){
+            Assert.assertEquals(f.getProperty("g"), "g");
+            Assert.assertEquals(f.getProperty("h"), "GetH");
+        }
     }
 }

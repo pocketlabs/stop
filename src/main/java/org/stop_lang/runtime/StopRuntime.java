@@ -378,7 +378,15 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
         for ( Map.Entry<String, Object> entry : to.getProperties().entrySet() ){
             Object value = entry.getValue();
             if (value != null){
-                if (value instanceof StateInstance){
+                if (value instanceof Collection){
+                    Collection instances = (Collection)value;
+                    for (Object instance : instances){
+                        if (instance instanceof StateInstance){
+                            StateInstance collectionStateInstance = (StateInstance)instance;
+                            gatherDynamicProperties(collectionStateInstance);
+                        }
+                    }
+                } else if (value instanceof StateInstance){
                     StateInstance propertyStateInstance = (StateInstance)value;
                     gatherDynamicProperties(propertyStateInstance);
                 }

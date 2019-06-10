@@ -29,6 +29,24 @@ GetD <- string {
     string c
 }
 
+E {
+    [F] f
+}
+
+F {
+    string g
+    optional string h <- GetH
+}
+
+GetH <- string {
+    string g
+}
+
+GetE <- E {
+    string d
+    optional string w
+}
+
 stop End {
     string v
     optional string w
@@ -36,4 +54,5 @@ stop End {
     optional string b <- GetB
     string c <- GetC
     optional string d <- GetD
+    optional E e <- GetE
 }

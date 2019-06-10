@@ -222,10 +222,15 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
         }
 
         if (!dependentProviderProperties.isEmpty()) {
-            Set<String> order = new TreeSet<>();
+            List<String> order = new ArrayList<>();
             for ( String propertyName : dependentProviderProperties.keySet() ){
                 if(dependentProviderProperties.containsKey(propertyName)) {
-                    order.addAll(getPropertyWithDependencies(dependentProviderProperties, propertyName));
+                    List<String> propertyWithDependencies = getPropertyWithDependencies(dependentProviderProperties, propertyName);
+                    for(String propertyDep : propertyWithDependencies){
+                        if (!order.contains(propertyDep)){
+                            order.add(propertyDep);
+                        }
+                    }
                 }
             }
             for (String orderedProperty : order){

@@ -73,6 +73,14 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
         if (implementationInstance.getName().equalsIgnoreCase("GetDownloadURL")) {
             return "http://test.com/download.zip";
         }
+        if (implementationInstance.getName().equalsIgnoreCase("Combine")) {
+            HelloRuntimeBase c = new HelloRuntimeBase("Wow");
+            c.put("name", "now");
+            return c;
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("CombineAgain")) {
+            return "combineAgain";
+        }
         return null;
     }
 
@@ -115,6 +123,11 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
 
     @Override
     public void enqueue(HelloRuntimeBase implementationInstance) {
+
+    }
+
+    @Override
+    public void enqueue(HelloRuntimeBase implementationInstance, Integer delayInSeconds) {
 
     }
 

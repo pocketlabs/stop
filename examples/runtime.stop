@@ -57,6 +57,10 @@ stop DatabaseError {
 
 }
 
+stop TimeoutError {
+
+}
+
 stop GetPostsTimeoutError {
     GetPosts timedOutState
 }
@@ -74,7 +78,25 @@ B {
     [Post] posts <- GetPosts
     optional string query
     optional [Post] filteredPosts <- GetFilteredPosts(filter: query)
+    optional Wow combine <- Combine
+    optional string again <- CombineAgain
     -> C
+}
+
+Wow {
+    string name
+}
+
+async Combine <- Wow {
+    string dynamicText
+    optional [Post] filteredPosts
+    timeout 30 -> TimeoutError
+}
+
+async CombineAgain <- string {
+    [Post] posts
+    optional Wow combine
+    timeout 30 -> TimeoutError
 }
 
 Y {

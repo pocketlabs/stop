@@ -11,5 +11,6 @@ public interface StopRuntimeImplementation<T> {
     Object executeAndReturnValue(T implementationInstance, StopRuntimeImplementationExecution<T> execution) throws StopRuntimeErrorException, StopRuntimeException;
     Collection executeAndReturnCollection(T implementationInstance, StopRuntimeImplementationExecution<T> execution) throws StopRuntimeErrorException, StopRuntimeException;
     void enqueue(T implementationInstance);
+    void enqueue(T implementationInstance, Integer delayInSeconds);
     void log(String message);
 }

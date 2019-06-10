@@ -1,0 +1,39 @@
+start Begin {
+    string v
+    optional string w
+    -> End
+}
+
+GetA <- string {
+    string v
+    optional string w
+}
+
+GetB <- string {
+    string v
+    string a
+}
+
+GetC <- string {
+    string v
+    optional string w
+    string a
+    optional string b
+}
+
+GetD <- string {
+    string v
+    optional string w
+    string a
+    optional string b
+    string c
+}
+
+stop End {
+    string v
+    optional string w
+    string a <- GetA
+    optional string b <- GetB
+    string c <- GetC
+    optional string d <- GetD
+}

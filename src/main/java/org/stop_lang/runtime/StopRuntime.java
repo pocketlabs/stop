@@ -424,7 +424,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
             }
             Property stateProperty = stateInstance.getState().getProperties().get(propertyName);
             if (stateProperty != null){
-                if (stateProperty.isOptional() && (stateInstance.getProperties().get(propertyName)==null)){
+                if (!providerStatePropertyEntryProperty.isOptional() && (stateInstance.getProperties().get(propertyName)==null)){
                     return false;
                 }
             }else{

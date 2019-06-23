@@ -6,7 +6,7 @@
 
     <groupId>org.stop_lang</groupId>
     <artifactId>Stop</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 
     <distributionManagement>
         <repository>
@@ -32,8 +32,8 @@
         <!-- https://mvnrepository.com/artifact/org.antlr/antlr4 -->
         <dependency>
             <groupId>org.antlr</groupId>
-            <artifactId>antlr4</artifactId>
-            <version>4.7.1</version>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.7.2</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.antlr/symtab -->

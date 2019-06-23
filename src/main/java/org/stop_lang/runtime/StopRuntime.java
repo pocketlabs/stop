@@ -206,7 +206,19 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                 } else {
                     List<String> dependencies = new ArrayList<>();
                     for (Map.Entry<String, Property> providerPropertyEntry : property.getProvider().getProperties().entrySet()){
-                        Property depProperty = to.getState().getProperties().get(providerPropertyEntry.getKey());
+                        String propertyName = providerPropertyEntry.getKey();
+                        if (property.getProviderMapping()!=null) {
+                            if (property.getProviderMapping().containsKey(propertyName)) {
+                                propertyName = property.getProviderMapping().get(propertyName);
+                            }
+                            if (propertyName.contains(".")) {
+                                String[] parts = propertyName.split("\\.");
+                                if (parts.length > 1) {
+                                    propertyName = parts[0];
+                                }
+                            }
+                        }
+                        Property depProperty = to.getState().getProperties().get(propertyName);
                         if ((depProperty!=null) && (depProperty.getProvider()!=null)){
                             dependencies.add(depProperty.getName());
                         }
@@ -406,12 +418,47 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                 }
             }
 
-            if ( stateInstance.getProperties().containsKey(field)) {
-                providerProperties.put(providerPropertyEntry.getKey(), stateInstance.getProperties().get(field));
+            if (field.contains(".")){
+                // Reference
+                Object value = getValueForReference(stateInstance, field);
+                if (value!=null){
+                    providerProperties.put(providerPropertyEntry.getKey(), value);
+                }
+            }else {
+                // Value
+                if (stateInstance.getProperties().containsKey(field)) {
+                    providerProperties.put(providerPropertyEntry.getKey(), stateInstance.getProperties().get(field));
+                }
             }
         }
 
         return new StateInstance(providerState, providerProperties);
+    }
+
+    private Object getValueForReference(StateInstance stateInstance, String reference){
+        String[] parts = reference.split("\\.");
+        String valueName = parts[0];
+
+        if (valueName != null){
+            Object value = stateInstance.getProperties().get(valueName);
+            if (value != null){
+                if (parts.length > 1){
+                    if ( value instanceof StateInstance){
+                        StateInstance valueStateInstance = (StateInstance)value;
+                        List<String> newParts = new ArrayList<>();
+                        for (int i = 1; i < parts.length; i++) {
+                            newParts.add(parts[i]);
+                        }
+                        String newReference = String.join(".", newParts);
+                        return getValueForReference(valueStateInstance, newReference);
+                    }
+                }else {
+                    return value;
+                }
+            }
+        }
+
+        return null;
     }
 
     private boolean shouldMapProvider(StateInstance stateInstance, Property stateInstanceProperty, State providerState){
@@ -428,6 +475,12 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
             if (stateInstanceProperty.getProviderMapping() != null){
                 if (stateInstanceProperty.getProviderMapping().containsKey(propertyName)){
                     propertyName = stateInstanceProperty.getProviderMapping().get(propertyName);
+                    if (propertyName.contains(".")) {
+                        String[] parts = propertyName.split("\\.");
+                        if (parts.length > 1) {
+                            propertyName = parts[0];
+                        }
+                    }
                 }
             }
             Property stateProperty = stateInstance.getState().getProperties().get(propertyName);

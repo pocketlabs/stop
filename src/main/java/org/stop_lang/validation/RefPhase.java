@@ -112,7 +112,7 @@ public class RefPhase extends StopBaseListener {
                             }
                         }
 
-                        Symbol currentScopeProperty = currentScope.resolve(fieldName);
+                        Symbol currentScopeProperty = findReference(currentScope, fieldName, fieldSymbol.isOptional());
                         if ((currentScopeProperty!= null) && (currentScopeProperty instanceof StopFieldSymbol)){
                             StopFieldSymbol currentScopeFieldSymbol = (StopFieldSymbol)currentScopeProperty;
 
@@ -236,5 +236,36 @@ public class RefPhase extends StopBaseListener {
                 }
             }
         }
+    }
+
+    private Symbol findReference(Scope scope, String reference, boolean optional){
+        String[] parts = reference.split("\\.");
+        String valueName = parts[0];
+
+        Symbol symbol = scope.resolve(valueName);
+
+        if (symbol!=null){
+            if (parts.length > 1){
+                if (symbol instanceof ModelFieldSymbol) {
+                    ModelFieldSymbol modelFieldSymbol = (ModelFieldSymbol) symbol;
+                    String modelName = modelFieldSymbol.getTypeName();
+                    ModelSymbol modelSymbol = (ModelSymbol)globals.resolve(modelName);
+                    if (modelSymbol!=null) {
+                        if (optional || (optional == modelFieldSymbol.isOptional())) {
+                            List<String> newParts = new ArrayList<>();
+                            for (int i = 1; i < parts.length; i++) {
+                                newParts.add(parts[i]);
+                            }
+                            String newReference = String.join(".", newParts);
+                            return findReference(modelSymbol, newReference, optional);
+                        }
+                    }
+                }
+            }else {
+                return symbol;
+            }
+        }
+
+        return null;
     }
 }

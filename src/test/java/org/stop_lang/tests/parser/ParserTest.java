@@ -13,6 +13,7 @@ public class ParserTest {
         assertEquals(Validator.validate("./examples/hello-world.stop"), true);
         assertEquals(Validator.validate("./examples/kitchen-sink.stop"), true);
         assertEquals(Validator.validate("./examples/types.stop"), true);
+        assertEquals(Validator.validate("./examples/references.stop"), true);
     }
 
     @Test

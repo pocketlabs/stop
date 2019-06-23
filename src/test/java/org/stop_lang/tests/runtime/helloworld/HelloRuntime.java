@@ -40,12 +40,29 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
             HelloRuntimeBase b = new HelloRuntimeBase("B");
             b.put("test2", "test2");
             b.put("query", "yes");
+
+            HelloRuntimeBase d = new HelloRuntimeBase("D");
+            HelloRuntimeBase e = new HelloRuntimeBase("E");
+            HelloRuntimeBase f = new HelloRuntimeBase("F");
+
+            f.put("name", "F IT");
+            try {
+                e.put("f", buildStateInstance(f));
+                d.put("e", buildStateInstance(e));
+                b.put("d", buildStateInstance(d));
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+
             return b;
         }
         if (implementationInstance.getName().equalsIgnoreCase("B")) {
             System.out.println("GOT MY dYNAMIC TEXT: " + implementationInstance.get("dynamicText"));
             HelloRuntimeBase c = new HelloRuntimeBase("C");
             c.put("test3", "test3");
+            c.put("h", implementationInstance.get("h"));
+            c.put("j", implementationInstance.get("aj"));
+            c.put("n", implementationInstance.get("n"));
             return c;
         }
         if (implementationInstance.getName().equalsIgnoreCase("Z")) {
@@ -80,6 +97,20 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
         }
         if (implementationInstance.getName().equalsIgnoreCase("CombineAgain")) {
             return "combineAgain";
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("GetH")) {
+            HelloRuntimeBase h = new HelloRuntimeBase("H");
+            h.put("i", implementationInstance.get("one"));
+            return h;
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("GetJ")) {
+            HelloRuntimeBase j = new HelloRuntimeBase("J");
+            StateInstance h = (StateInstance)implementationInstance.get("m");
+            j.put("k", h.getProperty("i"));
+            return j;
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("GetN")) {
+            return implementationInstance.get("k");
         }
         return null;
     }

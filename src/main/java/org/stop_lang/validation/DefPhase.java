@@ -98,7 +98,7 @@ public class DefPhase extends StopBaseListener {
                     Map<String, String> asyncSourceMapping = new HashMap<String, String>();
                     for (StopParser.Async_source_mapping_parameterContext parameterContext :
                             ctx.async_source().async_source_mapping().async_source_mapping_parameter()){
-                        asyncSourceMapping.put(parameterContext.ID().getText(), parameterContext.async_source_mapping_parameter_rename().ID().getText());
+                        asyncSourceMapping.put(parameterContext.ID().getText(), parameterContext.async_source_mapping_parameter_rename().getText());
                     }
                     field.setAsyncMapping(asyncSourceMapping);
                 }

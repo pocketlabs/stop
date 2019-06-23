@@ -88,6 +88,7 @@ async_source_mapping_parameter
 
 async_source_mapping_parameter_rename
     : ID
+    | REFERENCE
     ;
 
 type
@@ -133,8 +134,10 @@ ENQUEUE_OP : '>>';
 
 OPTIONAL : 'optional';
 
+DOT: '.';
+
 NUMBER
-   : '-'? ( '.' DIGIT+ | DIGIT+ ( '.' DIGIT* )? )
+   : '-'? ( DOT DIGIT+ | DIGIT+ ( DOT DIGIT* )? )
    ;
 
 MODEL_TYPE
@@ -145,10 +148,11 @@ ID
    : LOWERCASE_LETTER ( LETTER | DIGIT )*
    ;
 
-
+REFERENCE
+    : LOWERCASE_LETTER ( LETTER | DIGIT | DOT)*;
 
 FILENAME
-    : (LETTER | DIGIT | '.' | '\\' | '/' | '-' | '_')+
+    : (LETTER | DIGIT | DOT | '\\' | '/' | '-' | '_')+
     ;
 
 fragment UPPERCASE_LETTER

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Validator {
+public class  Validator {
     public static boolean validate(String filename) throws IOException {
         CharStream input = CharStreams.fromFileName(filename);
         return validate(input);

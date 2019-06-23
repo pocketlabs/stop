@@ -80,7 +80,49 @@ B {
     optional [Post] filteredPosts <- GetFilteredPosts(filter: query)
     optional Wow combine <- Combine
     optional string again <- CombineAgain
+    D d
+    H h <- GetH(one: d.e.f.name, two: d.e.g.uuid)
+    J aj <- GetJ(m: h)
+    optional string n <- GetN(k: aj.k)
     -> C
+}
+
+D {
+    E e
+}
+
+E {
+    F f
+    optional G g
+}
+
+F {
+    string name
+}
+
+G {
+    string uuid
+}
+
+H {
+    string i
+}
+
+J {
+    optional string k
+}
+
+GetJ <- J {
+    H m
+}
+
+GetN <- string {
+    string k
+}
+
+GetH <- H {
+    string one
+    optional string two
 }
 
 Wow {
@@ -106,6 +148,9 @@ Y {
 
 stop C {
     string test3
+    H h
+    J j
+    optional string n
 }
 
 Iso {

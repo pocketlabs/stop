@@ -1,0 +1,30 @@
+start A {
+    string one
+    optional int64 two
+    optional C three
+    -> B
+}
+
+C {
+    string four
+}
+
+GetC <- C {
+    string id
+}
+
+D {
+    string five
+    string six
+}
+
+GetD <- D {
+    string seven
+    optional string eight
+}
+
+stop B {
+    A a
+    C c <- GetC(id: a.one)
+    D d <- GetD(seven: c.four, eight: a.three.four)
+}

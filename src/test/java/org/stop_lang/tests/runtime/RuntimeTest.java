@@ -25,6 +25,17 @@ public class RuntimeTest {
         Assert.assertNotNull(stop);
         Assert.assertNotNull(runtime.getRuntime().getStop());
 
+        Assert.assertNotNull(stop.get("h"));
+        StateInstance h = (StateInstance)stop.get("h");
+        Assert.assertEquals("F IT", h.getProperty("i"));
+
+        Assert.assertNotNull(stop.get("j"));
+        StateInstance j = (StateInstance)stop.get("j");
+        Assert.assertEquals("F IT", j.getProperty("k"));
+
+        Assert.assertNotNull(stop.get("n"));
+        Assert.assertEquals("F IT", stop.get("n"));
+
         List<StateInstance> orderedStates = runtime.getRuntime().getOrderedStates();
         Assert.assertTrue(orderedStates.size() == 3);
     }

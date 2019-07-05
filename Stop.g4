@@ -2,10 +2,19 @@ grammar Stop;
 
 // Rules
 
-file: ( include | model )+;
+file: packageDeclaration? ( include | model )+;
+
+packageName
+	:	ID
+	|	packageName DOT ID
+	;
+
+packageDeclaration
+    : 'package' packageName
+    ;
 
 include
-    : 'include' '"' FILENAME '"'
+    : 'include' FILENAME
     ;
 
 model
@@ -86,9 +95,13 @@ async_source_mapping_parameter
     : ID ':' async_source_mapping_parameter_rename
     ;
 
-async_source_mapping_parameter_rename
+reference
     : ID
-    | REFERENCE
+    | reference '.' ID
+    ;
+
+async_source_mapping_parameter_rename
+    : reference
     ;
 
 type
@@ -148,11 +161,8 @@ ID
    : LOWERCASE_LETTER ( LETTER | DIGIT )*
    ;
 
-REFERENCE
-    : LOWERCASE_LETTER ( LETTER | DIGIT | DOT)*;
-
 FILENAME
-    : (LETTER | DIGIT | DOT | '\\' | '/' | '-' | '_')+
+    : '"' (LETTER | DIGIT | DOT | '\\' | '/' | '-' | '_')+ '"'
     ;
 
 fragment UPPERCASE_LETTER

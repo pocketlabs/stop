@@ -28,6 +28,30 @@ public class StopBaseListener implements StopListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPackageName(StopParser.PackageNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPackageName(StopParser.PackageNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPackageDeclaration(StopParser.PackageDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPackageDeclaration(StopParser.PackageDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterInclude(StopParser.IncludeContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -251,6 +275,18 @@ public class StopBaseListener implements StopListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAsync_source_mapping_parameter(StopParser.Async_source_mapping_parameterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReference(StopParser.ReferenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReference(StopParser.ReferenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

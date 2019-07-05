@@ -16,7 +16,7 @@ public class IncludePhase extends StopBaseListener {
 
     @Override public void exitInclude(StopParser.IncludeContext ctx) {
         try {
-            String filename = ctx.FILENAME().getText();
+            String filename = ctx.FILENAME().getText().replaceAll("\"", "");
             CharStream input = CharStreams.fromFileName(filename);
             StopLexer l = new StopLexer(input);
             TokenStream tokens = new CommonTokenStream(l);

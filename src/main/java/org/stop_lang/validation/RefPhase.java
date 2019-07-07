@@ -1,16 +1,15 @@
 package org.stop_lang.validation;
 
-import org.antlr.symtab.FieldSymbol;
 import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.stop_lang.parser.StopBaseListener;
 import org.stop_lang.parser.StopParser;
 import org.stop_lang.symbols.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +18,15 @@ public class RefPhase extends StopBaseListener {
     GlobalScope globals;
     Scope currentScope; // resolve symbols starting in this scope
     public List<Exception> errors = new ArrayList<Exception>();
+    private String packageName = null;
 
     public RefPhase(GlobalScope globals, ParseTreeProperty<Scope> scopes) {
         this.scopes = scopes;
         this.globals = globals;
+    }
+
+    @Override public void exitPackageDeclaration(StopParser.PackageDeclarationContext ctx) {
+        this.packageName = ctx.packageName().getText();
     }
 
     @Override public void enterFile(StopParser.FileContext ctx) {
@@ -42,9 +46,9 @@ public class RefPhase extends StopBaseListener {
         Symbol symbol = currentScope.resolve(name);
         if (symbol instanceof ModelFieldSymbol){
             ModelFieldSymbol modelFieldSymbol = (ModelFieldSymbol)symbol;
-            String modelName = modelFieldSymbol.getTypeName();
-            Symbol modelSymbol = globals.resolve(modelName);
-            Symbol enumSymbol = currentScope.resolve(modelName);
+            String modelName = modelFieldSymbol.getFullTypeName();
+            Symbol modelSymbol = globalsResolveWithPackage(modelName);
+            Symbol enumSymbol = currentScope.resolve(modelFieldSymbol.getTypeName());
             if(modelSymbol == null){
                 if ((enumSymbol != null) && (enumSymbol instanceof EnumSymbol)){
                     // Found symbol
@@ -56,9 +60,9 @@ public class RefPhase extends StopBaseListener {
         }
         if (symbol instanceof CollectionFieldSymbol){
             CollectionFieldSymbol collectionFieldSymbol = (CollectionFieldSymbol)symbol;
-            String modelName = collectionFieldSymbol.getTypeName();
-            Symbol modelSymbol = globals.resolve(modelName);
-            Symbol enumSymbol = currentScope.resolve(modelName);
+            String modelName = collectionFieldSymbol.getFullTypeName();
+            Symbol modelSymbol = globalsResolveWithPackage(modelName);
+            Symbol enumSymbol = currentScope.resolve(collectionFieldSymbol.getTypeName());
             if (collectionFieldSymbol.isState() && (modelSymbol == null)) {
                 if ((enumSymbol != null) && (enumSymbol instanceof EnumSymbol)) {
                     // Found symbol
@@ -69,30 +73,27 @@ public class RefPhase extends StopBaseListener {
             }
         }
         if (ctx.async_source() != null){
-            String modelName = ctx.async_source().MODEL_TYPE().getText();
-            Symbol modelSymbol = globals.resolve(modelName);
+            String modelName = ctx.async_source().model_type().getText();
+            Symbol modelSymbol = globalsResolveWithPackage(modelName);
             if(modelSymbol == null){
                 errors.add(new StopValidationException("Couldn't define field \""+
                         name +"\" because " + modelName + " isn't defined"));
             }else{
                 ModelSymbol theModelSymbol = (ModelSymbol)modelSymbol;
                 String typeString = null;
+                boolean isCollection = false;
+
                 if (ctx.type()!=null){
-                    typeString = ctx.type().getText();
+                    typeString = getFullModelName(ctx.type().getText());
+                }else if (ctx.collection()!=null){
+                    isCollection = true;
+                    typeString = getFullModelName(ctx.collection().type().getText());
                 }
-                if (ctx.collection()!=null){
-                    typeString = ctx.collection().getText();
-                }
-                if(typeString!=null){
-                    if (theModelSymbol.getReturnTypeString()!=null){
-                        if (!typeString.equals(theModelSymbol.getReturnTypeString())){
-                            errors.add(new StopValidationException("Couldn't define field \""+
-                                    name +"\" because "
-                                    + typeString + " doesn't match async return type of "
-                                    + theModelSymbol.getReturnTypeString()));
-                            System.err.println();
-                        }
-                    }
+                if ((typeString!= null) && !(typeString.equals(theModelSymbol.getReturnType()) && (theModelSymbol.isReturnCollection()==isCollection))){
+                    errors.add(new StopValidationException("Couldn't define field \""+
+                            name +"\" because "
+                            + typeString + " doesn't match async return type of "
+                            + theModelSymbol.getReturnType()));
                 }
 
                 for( Symbol modelSymbolSymbol : theModelSymbol.getAllSymbols()){
@@ -116,7 +117,9 @@ public class RefPhase extends StopBaseListener {
                         if ((currentScopeProperty!= null) && (currentScopeProperty instanceof StopFieldSymbol)){
                             StopFieldSymbol currentScopeFieldSymbol = (StopFieldSymbol)currentScopeProperty;
 
-                            if (!currentScopeFieldSymbol.getTypeName().equals(fieldSymbol.getTypeName())){
+                            String fieldSymbolTypeName = fieldSymbol.getFullTypeName();
+
+                            if (!currentScopeFieldSymbol.getFullTypeName().equals(fieldSymbolTypeName)){
                                 errors.add(new StopValidationException("Couldn't define field \""+
                                         name +"\" because "
                                         + fieldSymbol.getName() + " mapping to "+fieldName+" doesn't match required type "
@@ -149,7 +152,7 @@ public class RefPhase extends StopBaseListener {
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
         String modelName = ctx.MODEL_TYPE().getText();
-        Symbol modelSymbol = globals.resolve(modelName);
+        Symbol modelSymbol = globalsResolveWithPackage(modelName);
         if(modelSymbol == null){
             errors.add(new StopValidationException("Couldn't define transition because " + modelName + " isn't defined"));
         }
@@ -157,7 +160,7 @@ public class RefPhase extends StopBaseListener {
 
     @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
         String modelName = ctx.MODEL_TYPE().getText();
-        Symbol modelSymbol = globals.resolve(modelName);
+        Symbol modelSymbol = globalsResolveWithPackage(modelName);
         if(modelSymbol == null){
             errors.add(new StopValidationException("Couldn't define enqueue because " + modelName + " isn't defined"));
         }
@@ -167,7 +170,16 @@ public class RefPhase extends StopBaseListener {
         if (ctx.type()!=null){
             if(ctx.type().model_type() != null){
                 String modelName = ctx.type().model_type().MODEL_TYPE().getText();
-                Symbol modelSymbol = globals.resolve(modelName);
+
+                ParseTree p = ctx.getParent().getParent().getChild(0);
+                if (p!=null && (p instanceof StopParser.PackageDeclarationContext)){
+                    StopParser.PackageDeclarationContext decl = (StopParser.PackageDeclarationContext)p;
+                    String packageName = decl.packageName().getText();
+                    modelName = packageName + "." + modelName;
+                }
+
+                Symbol modelSymbol = globalsResolveWithPackage(modelName);
+
                 if(modelSymbol == null){
                     errors.add(new StopValidationException("Couldn't define return type because " + modelName + " isn't defined"));
                 }
@@ -176,7 +188,15 @@ public class RefPhase extends StopBaseListener {
         if (ctx.collection() != null){
             if (ctx.collection().type().model_type() != null){
                 String modelName = ctx.collection().type().model_type().MODEL_TYPE().getText();
-                Symbol modelSymbol = globals.resolve(modelName);
+
+                ParseTree p = ctx.getParent().getParent().getChild(0);
+                if (p!=null && (p instanceof StopParser.PackageDeclarationContext)){
+                    StopParser.PackageDeclarationContext decl = (StopParser.PackageDeclarationContext)p;
+                    String packageName = decl.packageName().getText();
+                    modelName = packageName + "." + modelName;
+                }
+
+                Symbol modelSymbol = globalsResolveWithPackage(modelName);
                 if(modelSymbol == null){
                     errors.add(new StopValidationException("Couldn't define return collection because "
                             + modelName + " isn't defined"));
@@ -188,7 +208,7 @@ public class RefPhase extends StopBaseListener {
     @Override public void exitThrow_parameter(StopParser.Throw_parameterContext ctx) {
         if (ctx.MODEL_TYPE()!=null){
             String modelName = ctx.MODEL_TYPE().getText();
-            Symbol modelSymbol = globals.resolve(modelName);
+            Symbol modelSymbol = globalsResolveWithPackage(modelName);
             if(modelSymbol == null){
                 errors.add(new StopValidationException("Couldn't define thrown transition because "
                         + modelName + " isn't defined"));
@@ -199,7 +219,7 @@ public class RefPhase extends StopBaseListener {
     @Override public void exitTimeout(StopParser.TimeoutContext ctx) {
         if (ctx.transition().MODEL_TYPE()!=null){
             String modelName = ctx.transition().MODEL_TYPE().getText();
-            Symbol modelSymbol = globals.resolve(modelName);
+            Symbol modelSymbol = globalsResolveWithPackage(modelName);
             if(modelSymbol == null){
                 errors.add(new StopValidationException("Couldn't define timeout transition because "
                         + modelName + " isn't defined"));
@@ -221,7 +241,11 @@ public class RefPhase extends StopBaseListener {
                         if (timedOutStateSymbol != null) {
                             if (timedOutStateSymbol instanceof ModelFieldSymbol) {
                                 ModelFieldSymbol fieldSymbol = (ModelFieldSymbol) timedOutStateSymbol;
-                                if (!fieldSymbol.getTypeName().equals(currentScope.getName())) {
+                                String fieldSymbolTypeName = fieldSymbol.getTypeName();
+                                if ((packageName!=null) && !fieldSymbolTypeName.contains(".")){
+                                    fieldSymbolTypeName = packageName + "." + fieldSymbol.getTypeName();
+                                }
+                                if (!fieldSymbolTypeName.equals(currentScope.getName())) {
                                     errors.add(new StopValidationException("Couldn't define timeout transition because timedOutState has type " + fieldSymbol.getTypeName() + " instead of " + currentScope.getName()));
                                 }
                             } else {
@@ -249,7 +273,7 @@ public class RefPhase extends StopBaseListener {
                 if (symbol instanceof ModelFieldSymbol) {
                     ModelFieldSymbol modelFieldSymbol = (ModelFieldSymbol) symbol;
                     String modelName = modelFieldSymbol.getTypeName();
-                    ModelSymbol modelSymbol = (ModelSymbol)globals.resolve(modelName);
+                    ModelSymbol modelSymbol = (ModelSymbol)globalsResolveWithPackage(modelName);
                     if (modelSymbol!=null) {
                         if (optional || (optional == modelFieldSymbol.isOptional())) {
                             List<String> newParts = new ArrayList<>();
@@ -267,5 +291,20 @@ public class RefPhase extends StopBaseListener {
         }
 
         return null;
+    }
+
+    private Symbol globalsResolveWithPackage(String name){
+        return globals.resolve(getFullModelName(name));
+    }
+
+    private String getFullModelName(String name){
+        if (!isReference(name) && (packageName!=null)){
+            return packageName + "." + name;
+        }
+        return name;
+    }
+
+    private boolean isReference(String name){
+        return name.contains(".");
     }
 }

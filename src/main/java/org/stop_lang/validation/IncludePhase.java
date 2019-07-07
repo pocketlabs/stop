@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.stop_lang.parser.StopBaseListener;
 import org.stop_lang.parser.StopLexer;
 import org.stop_lang.parser.StopParser;
+import org.stop_lang.symbols.ModelSymbol;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +39,9 @@ public class IncludePhase extends StopBaseListener {
             }
 
             for(ParseTree child : tree.children){
-                ctx.getParent().children.add(indexToInsertAt + 1, child);
+                if (!(child instanceof StopParser.PackageDeclarationContext)){
+                    ctx.getParent().children.add(indexToInsertAt + 1, child);
+                }
             }
         }catch (IOException exception){
             errors.add(exception);

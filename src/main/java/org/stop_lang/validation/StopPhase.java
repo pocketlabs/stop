@@ -16,10 +16,15 @@ public class StopPhase extends StopBaseListener {
     GlobalScope globals;
     Scope currentScope; // resolve symbols starting in this scope
     public List<Exception> errors = new ArrayList<Exception>();
+    private String packageName = null;
 
     public StopPhase(GlobalScope globals, ParseTreeProperty<Scope> scopes) {
         this.scopes = scopes;
         this.globals = globals;
+    }
+
+    @Override public void exitPackageDeclaration(StopParser.PackageDeclarationContext ctx) {
+        this.packageName = ctx.packageName().getText();
     }
 
     @Override public void enterFile(StopParser.FileContext ctx) {
@@ -36,7 +41,7 @@ public class StopPhase extends StopBaseListener {
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
         String modelName = ctx.MODEL_TYPE().getText();
-        Symbol symbol = globals.resolve(modelName);
+        Symbol symbol = globalsResolveWithPackage(modelName);
         if(symbol != null) {
             if (symbol instanceof ModelSymbol){
                 ModelSymbol modelSymbol = (ModelSymbol) symbol;
@@ -53,7 +58,7 @@ public class StopPhase extends StopBaseListener {
 
     @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
         String modelName = ctx.MODEL_TYPE().getText();
-        Symbol symbol = globals.resolve(modelName);
+        Symbol symbol = globalsResolveWithPackage(modelName);
         if(symbol != null) {
             if (symbol instanceof ModelSymbol){
                 ModelSymbol modelSymbol = (ModelSymbol) symbol;
@@ -86,7 +91,7 @@ public class StopPhase extends StopBaseListener {
         boolean foundStop = true;
 
         for (String transition : transitions){
-            Symbol symbol = globals.resolve(transition);
+            Symbol symbol = globalsResolveWithPackage(transition);
             if(symbol != null) {
                 if (symbol instanceof ModelSymbol){
                     ModelSymbol transitionModelSymbol = (ModelSymbol) symbol;
@@ -102,5 +107,20 @@ public class StopPhase extends StopBaseListener {
         }
 
         return foundStop;
+    }
+
+    private Symbol globalsResolveWithPackage(String name){
+        return globals.resolve(getFullModelName(name));
+    }
+
+    private String getFullModelName(String name){
+        if (!isReference(name) && (packageName!=null)){
+            return packageName + "." + name;
+        }
+        return name;
+    }
+
+    private boolean isReference(String name){
+        return name.contains(".");
     }
 }

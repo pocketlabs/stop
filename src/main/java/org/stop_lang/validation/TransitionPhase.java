@@ -16,10 +16,15 @@ public class TransitionPhase extends StopBaseListener {
     GlobalScope globals;
     Scope currentScope; // resolve symbols starting in this scope
     public List<Exception> errors = new ArrayList<Exception>();
+    private String packageName = null;
 
     public TransitionPhase(GlobalScope globals, ParseTreeProperty<Scope> scopes) {
         this.scopes = scopes;
         this.globals = globals;
+    }
+
+    @Override public void exitPackageDeclaration(StopParser.PackageDeclarationContext ctx) {
+        this.packageName = ctx.packageName().getText();
     }
 
     @Override public void enterFile(StopParser.FileContext ctx) {
@@ -47,7 +52,7 @@ public class TransitionPhase extends StopBaseListener {
             modelSymbol = (ModelSymbol)currentScope.getEnclosingScope();
         }
 
-        Symbol symbol = globals.resolve(modelName);
+        Symbol symbol = globalsResolveWithPackage(modelName);
         if(modelSymbol != null && symbol != null) {
             if (symbol instanceof ModelSymbol){
                 ModelSymbol transitionSymbol = (ModelSymbol)symbol;
@@ -71,7 +76,7 @@ public class TransitionPhase extends StopBaseListener {
             modelSymbol = (ModelSymbol)currentScope.getEnclosingScope();
         }
 
-        Symbol symbol = globals.resolve(modelName);
+        Symbol symbol = globalsResolveWithPackage(modelName);
         if(modelSymbol != null && symbol != null) {
             if (symbol instanceof ModelSymbol){
                 ModelSymbol transitionSymbol = (ModelSymbol)symbol;
@@ -90,7 +95,7 @@ public class TransitionPhase extends StopBaseListener {
         String modelName = ctx.MODEL_TYPE().getText();
         ModelSymbol modelSymbol = (ModelSymbol)currentScope;
 
-        Symbol symbol = globals.resolve(modelName);
+        Symbol symbol = globalsResolveWithPackage(modelName);
         if(symbol != null) {
             if (symbol instanceof ModelSymbol){
                 ModelSymbol transitionSymbol = (ModelSymbol)symbol;
@@ -103,5 +108,13 @@ public class TransitionPhase extends StopBaseListener {
         }else{
             errors.add(new StopValidationException("Couldn't define thrown transition because " + modelName + " isn't defined"));
         }
+    }
+
+    private Symbol globalsResolveWithPackage(String name){
+        Symbol s = globals.resolve(name);
+        if ((s==null) && (packageName!=null) && !name.contains(".")){
+            s = globals.resolve(packageName + "." + name);
+        }
+        return s;
     }
 }

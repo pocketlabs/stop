@@ -16,6 +16,6 @@ public class StopTest {
         Stop stop = new Stop(input);
         Set<State> startStates = stop.getStartStates();
         Assert.assertTrue(startStates.size() == 1);
-        Assert.assertEquals(startStates.iterator().next().getName(), "Router");
+        Assert.assertEquals(startStates.iterator().next().getName(), "kitchen.sink.Router");
     }
 }

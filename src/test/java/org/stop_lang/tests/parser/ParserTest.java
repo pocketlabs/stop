@@ -14,6 +14,7 @@ public class ParserTest {
         assertEquals(Validator.validate("./examples/kitchen-sink.stop"), true);
         assertEquals(Validator.validate("./examples/types.stop"), true);
         assertEquals(Validator.validate("./examples/references.stop"), true);
+        assertEquals(Validator.validate("./examples/package.stop"), true);
     }
 
     @Test

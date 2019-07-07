@@ -1,0 +1,14 @@
+package test
+
+include "./examples/package-include.stop"
+
+start A {
+    string path
+    -> B
+}
+
+stop B {
+    string user_uuid
+    test.models.Role role2
+    test.models.User user <- test.models.GetUser(uuid: user_uuid, role: role2)
+}

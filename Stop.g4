@@ -64,6 +64,7 @@ scalar_type: 'double' | 'float' | 'int32' | 'int64' | 'uint32' | 'uint64' | 'sin
 
 model_type
     : MODEL_TYPE
+    | reference DOT MODEL_TYPE
     ;
 
 enum_type
@@ -84,7 +85,7 @@ field
 	;
 
 async_source
-    : RETURN_OP MODEL_TYPE (async_source_mapping)?
+    : RETURN_OP model_type (async_source_mapping)?
     ;
 
 async_source_mapping
@@ -97,7 +98,7 @@ async_source_mapping_parameter
 
 reference
     : ID
-    | reference '.' ID
+    | reference DOT ID
     ;
 
 async_source_mapping_parameter_rename

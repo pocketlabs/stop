@@ -68,6 +68,10 @@ public class EnumRuntime implements StopRuntimeImplementation<EnumRuntimeBase> {
                 EnumerationInstance ei5 = new EnumerationInstance(e5, "HOME");
                 b.put("r", ei5);
 
+                Enumeration e6 = runtime.getStop().getEnumerations().get("sandbox.enums.produce.Fruit");
+                EnumerationInstance ei6 = new EnumerationInstance(e6, "APPLE");
+                b.put("fruit", ei6);
+
                 return b;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -83,6 +87,8 @@ public class EnumRuntime implements StopRuntimeImplementation<EnumRuntimeBase> {
             Assert.assertEquals(((EnumerationInstance)implementationInstance.get("status")).getValue(), "SUCCESS");
             Assert.assertNotNull(implementationInstance.get("r"));
             Assert.assertEquals(((EnumerationInstance)implementationInstance.get("r")).getValue(), "HOME");
+            Assert.assertNotNull(implementationInstance.get("fruit"));
+            Assert.assertEquals(((EnumerationInstance)implementationInstance.get("fruit")).getValue(), "APPLE");
             return new EnumRuntimeBase("sandbox.C");
         }
         return null;

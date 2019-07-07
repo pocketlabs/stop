@@ -27,6 +27,7 @@ B {
     Method m
     sandbox.enums.Boolean boolean
     sandbox.enums.Status status
+    sandbox.enums.produce.Fruit fruit
     Residence r
     string s <- GetStatus(status: status)
     -> C

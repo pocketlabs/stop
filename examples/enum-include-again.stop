@@ -1,4 +1,4 @@
 enum Residence {
     HOME
-    APARTMENt
+    APARTMENT
 }

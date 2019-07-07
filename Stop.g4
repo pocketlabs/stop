@@ -2,7 +2,7 @@ grammar Stop;
 
 // Rules
 
-file: packageDeclaration? ( include | model )+;
+file: packageDeclaration? ( include | model | enumeration )+;
 
 packageName
 	:	ID

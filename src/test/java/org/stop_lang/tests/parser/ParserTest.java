@@ -15,6 +15,7 @@ public class ParserTest {
         assertEquals(Validator.validate("./examples/types.stop"), true);
         assertEquals(Validator.validate("./examples/references.stop"), true);
         assertEquals(Validator.validate("./examples/package.stop"), true);
+        assertEquals(Validator.validate("./examples/enum.stop"), true);
     }
 
     @Test

@@ -1,0 +1,41 @@
+package sandbox
+
+include "./examples/enum-include.stop"
+include "./examples/enum-include-again.stop"
+
+enum Method {
+    POST
+    GET
+}
+
+start A {
+    enum Y {
+        ONE
+        TWO
+    }
+    Y f
+    -> B
+}
+
+B {
+    enum Z {
+        THREE
+        FOUR
+        FIVE
+    }
+    Z e
+    Method m
+    sandbox.enums.Boolean boolean
+    sandbox.enums.Status status
+    Residence r
+    string s <- GetStatus(status: status)
+    -> C
+}
+
+GetStatus <- string {
+    sandbox.enums.Status status
+}
+
+stop C {
+
+}

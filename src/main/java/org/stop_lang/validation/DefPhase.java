@@ -63,7 +63,7 @@ public class DefPhase extends StopBaseListener {
     }
 
     @Override public void enterEnumeration(StopParser.EnumerationContext ctx) {
-        EnumSymbol enumSymbol = new EnumSymbol(ctx, currentScope);
+        EnumSymbol enumSymbol = new EnumSymbol(ctx, currentScope, packageName);
         currentScope.define(enumSymbol);
         saveScope(ctx, enumSymbol);
         currentScope = enumSymbol;

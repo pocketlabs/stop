@@ -1,0 +1,11 @@
+package sandbox.enums
+
+enum Status {
+    SUCCESS
+    FAILURE
+}
+
+enum Boolean {
+    YES
+    NO
+}

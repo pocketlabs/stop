@@ -13,7 +13,7 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
     private StopRuntime<HelloRuntimeBase> runtime;
 
     public HelloRuntime() throws IOException {
-        stop = new Stop("./examples/runtime.stop");
+        stop = Stop.fromFilename("./examples/runtime.stop");
         runtime = new StopRuntime<>(stop, this);
     }
 

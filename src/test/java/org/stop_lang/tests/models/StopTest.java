@@ -13,7 +13,7 @@ public class StopTest {
     @Test
     public void stop() throws Exception{
         CharStream input = CharStreams.fromFileName("./examples/kitchen-sink.stop");
-        Stop stop = new Stop(input);
+        Stop stop = Stop.fromInput(input);
         Set<State> startStates = stop.getStartStates();
         Assert.assertTrue(startStates.size() == 1);
         Assert.assertEquals(startStates.iterator().next().getName(), "kitchen.sink.Router");

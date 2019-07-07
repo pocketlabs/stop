@@ -17,7 +17,7 @@ public class TemplateEngineTest {
 
     @Test
     public void test() throws Exception{
-        Stop stop = new Stop("./examples/templates/templates.stop");
+        Stop stop = Stop.fromFilename("./examples/templates/templates.stop");
         State templateStop = stop.getStates().get("Posts");
         Template template = Validator.getTemplate(stop, templateStop, "./examples/templates/posts.st");
 

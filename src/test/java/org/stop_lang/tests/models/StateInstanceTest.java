@@ -17,7 +17,7 @@ public class StateInstanceTest {
     @Test
     public void instance() throws Exception {
         CharStream input = CharStreams.fromFileName("./examples/hello-world.stop");
-        Stop stop = new Stop(input);
+        Stop stop = Stop.fromInput(input);
         State helloState = stop.getStates().get("Hello");
         Map<String, Object> props = new HashMap<String, Object>();
         props.put("whom", "test");
@@ -28,7 +28,7 @@ public class StateInstanceTest {
     @Test
     public void validation() throws Exception {
         CharStream input = CharStreams.fromFileName("./examples/instance.stop");
-        Stop stop = new Stop(input);
+        Stop stop = Stop.fromInput(input);
 
         State aState = stop.getStates().get("A");
 

@@ -40,7 +40,7 @@ public class TransitionPhase extends StopBaseListener {
     }
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
-        String modelName = ctx.MODEL_TYPE().getText();
+        String modelName = getFullModelName(ctx.MODEL_TYPE().getText());
         ModelSymbol modelSymbol = null;
         if (currentScope instanceof ModelSymbol){
             if (ctx.getParent() instanceof StopParser.TimeoutContext){
@@ -111,10 +111,17 @@ public class TransitionPhase extends StopBaseListener {
     }
 
     private Symbol globalsResolveWithPackage(String name){
-        Symbol s = globals.resolve(name);
-        if ((s==null) && (packageName!=null) && !name.contains(".")){
-            s = globals.resolve(packageName + "." + name);
+        return globals.resolve(getFullModelName(name));
+    }
+
+    private String getFullModelName(String name){
+        if (!isReference(name) && (packageName!=null)){
+            return packageName + "." + name;
         }
-        return s;
+        return name;
+    }
+
+    private boolean isReference(String name){
+        return name.contains(".");
     }
 }

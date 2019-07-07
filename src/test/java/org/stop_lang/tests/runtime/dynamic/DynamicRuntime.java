@@ -3,7 +3,6 @@ package org.stop_lang.tests.runtime.dynamic;
 import org.stop_lang.models.StateInstance;
 import org.stop_lang.models.Stop;
 import org.stop_lang.runtime.*;
-import org.stop_lang.tests.runtime.helloworld.HelloRuntimeBase;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ public class DynamicRuntime implements StopRuntimeImplementation<DynamicRuntimeB
     private StopRuntime<DynamicRuntimeBase> runtime;
 
     public DynamicRuntime() throws IOException {
-        stop = new Stop("./examples/dynamic.stop");
+        stop = Stop.fromFilename("./examples/dynamic.stop");
         runtime = new StopRuntime<>(stop, this);
     }
 

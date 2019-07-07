@@ -9,7 +9,7 @@ import org.stop_lang.templates.validation.Validator;
 public class ParserTest {
     @Test
     void parserTest() throws Exception {
-        Stop stop = new Stop("./examples/templates/templates.stop");
+        Stop stop = Stop.fromFilename("./examples/templates/templates.stop");
         State templateStop = stop.getStates().get("Posts");
         Validator.validate(stop, templateStop, "./examples/templates/posts.st");
     }

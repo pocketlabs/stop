@@ -10,7 +10,7 @@ public class EnumerationPropertyTest {
     @Test
     public void property() throws Exception{
         CharStream input = CharStreams.fromFileName("./examples/kitchen-sink.stop");
-        Stop stop = new Stop(input);
+        Stop stop = Stop.fromInput(input);
         State requestState = stop.getStates().get("kitchen.sink.Request");
         Enumeration enumeration = requestState.getEnumerations().get("Method");
         EnumerationProperty enumerationProperty = (EnumerationProperty)requestState.getProperties().get("method");

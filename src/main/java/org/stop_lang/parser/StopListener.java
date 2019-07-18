@@ -18,6 +18,26 @@ public interface StopListener extends ParseTreeListener {
 	 */
 	void exitFile(StopParser.FileContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link StopParser#packageName}.
+	 * @param ctx the parse tree
+	 */
+	void enterPackageName(StopParser.PackageNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link StopParser#packageName}.
+	 * @param ctx the parse tree
+	 */
+	void exitPackageName(StopParser.PackageNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link StopParser#packageDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterPackageDeclaration(StopParser.PackageDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link StopParser#packageDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitPackageDeclaration(StopParser.PackageDeclarationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link StopParser#include}.
 	 * @param ctx the parse tree
 	 */
@@ -207,6 +227,16 @@ public interface StopListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAsync_source_mapping_parameter(StopParser.Async_source_mapping_parameterContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link StopParser#reference}.
+	 * @param ctx the parse tree
+	 */
+	void enterReference(StopParser.ReferenceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link StopParser#reference}.
+	 * @param ctx the parse tree
+	 */
+	void exitReference(StopParser.ReferenceContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link StopParser#async_source_mapping_parameter_rename}.
 	 * @param ctx the parse tree

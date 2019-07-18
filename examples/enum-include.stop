@@ -1,0 +1,13 @@
+package sandbox.enums
+
+include "./examples/enum-include-nested.stop"
+
+enum Status {
+    SUCCESS
+    FAILURE
+}
+
+enum Boolean {
+    YES
+    NO
+}

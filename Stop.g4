@@ -2,10 +2,19 @@ grammar Stop;
 
 // Rules
 
-file: ( include | model )+;
+file: packageDeclaration? ( include | model | enumeration )+;
+
+packageName
+	:	ID
+	|	packageName DOT ID
+	;
+
+packageDeclaration
+    : 'package' packageName
+    ;
 
 include
-    : 'include' '"' FILENAME '"'
+    : 'include' FILENAME
     ;
 
 model
@@ -55,6 +64,7 @@ scalar_type: 'double' | 'float' | 'int32' | 'int64' | 'uint32' | 'uint64' | 'sin
 
 model_type
     : MODEL_TYPE
+    | reference DOT MODEL_TYPE
     ;
 
 enum_type
@@ -75,7 +85,7 @@ field
 	;
 
 async_source
-    : RETURN_OP MODEL_TYPE (async_source_mapping)?
+    : RETURN_OP model_type (async_source_mapping)?
     ;
 
 async_source_mapping
@@ -86,9 +96,13 @@ async_source_mapping_parameter
     : ID ':' async_source_mapping_parameter_rename
     ;
 
-async_source_mapping_parameter_rename
+reference
     : ID
-    | REFERENCE
+    | reference DOT ID
+    ;
+
+async_source_mapping_parameter_rename
+    : reference
     ;
 
 type
@@ -148,11 +162,8 @@ ID
    : LOWERCASE_LETTER ( LETTER | DIGIT )*
    ;
 
-REFERENCE
-    : LOWERCASE_LETTER ( LETTER | DIGIT | DOT)*;
-
 FILENAME
-    : (LETTER | DIGIT | DOT | '\\' | '/' | '-' | '_')+
+    : '"' (LETTER | DIGIT | DOT | '\\' | '/' | '-' | '_')+ '"'
     ;
 
 fragment UPPERCASE_LETTER

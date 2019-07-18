@@ -11,14 +11,20 @@ import java.util.Set;
 
 public class Stop {
     private Map<String, State> states;
+    private Map<String, Enumeration> enumerations;
 
-    public Stop(String filename) throws IOException {
+    public static Stop fromFilename(String filename) throws IOException {
         CharStream input = CharStreams.fromFileName(filename);
-        this.states = Validator.getStates(input);
+        return fromInput(input);
     }
 
-    public Stop(CharStream input) throws IOException {
-        this.states = Validator.getStates(input);
+    public static Stop fromInput(CharStream input) {
+        return Validator.getStop(input);
+    }
+
+    public Stop(Map<String, State> states, Map<String, Enumeration> enumerations){
+        this.states = states;
+        this.enumerations = enumerations;
     }
 
     public Set<State> getStartStates(){
@@ -33,5 +39,8 @@ public class Stop {
 
     public Map<String, State> getStates(){
         return this.states;
+    }
+    public Map<String, Enumeration> getEnumerations(){
+        return this.enumerations;
     }
 }

@@ -2,6 +2,8 @@
  * This Stop file seeks to throw the kitchen sink at the parser and exercise every language feature.
  */
 
+package kitchen.sink
+
 // Single Line Comment
 
 /**

@@ -2,10 +2,14 @@ package org.stop_lang.tests.runtime;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import org.stop_lang.models.Enumeration;
+import org.stop_lang.models.EnumerationInstance;
 import org.stop_lang.models.StateInstance;
 import org.stop_lang.runtime.StopRuntimeException;
 import org.stop_lang.tests.runtime.dynamic.DynamicRuntime;
 import org.stop_lang.tests.runtime.dynamic.DynamicRuntimeBase;
+import org.stop_lang.tests.runtime.enums.EnumRuntime;
+import org.stop_lang.tests.runtime.enums.EnumRuntimeBase;
 import org.stop_lang.tests.runtime.helloworld.HelloRuntime;
 import org.stop_lang.tests.runtime.helloworld.HelloRuntimeBase;
 
@@ -96,5 +100,16 @@ public class RuntimeTest {
             Assert.assertEquals(f.getProperty("g"), "g");
             Assert.assertEquals(f.getProperty("h"), "GetH");
         }
+    }
+
+    @Test
+    public void enums() throws Exception {
+        EnumRuntime runtime = new EnumRuntime();
+        EnumRuntimeBase startInstance = new EnumRuntimeBase("sandbox.A");
+        Enumeration e = runtime.getStop().getStates().get("sandbox.A").getEnumerations().get("Y");
+        EnumerationInstance ei = new EnumerationInstance(e, "TWO");
+        startInstance.put("f", ei);
+        EnumRuntimeBase stop = runtime.getRuntime().start(startInstance);
+        Assert.assertNotNull(stop);
     }
 }

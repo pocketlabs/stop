@@ -1,0 +1,15 @@
+package test.models
+
+User {
+    string uuid
+    string email
+}
+
+Role {
+    string name
+}
+
+GetUser <- User {
+    string uuid
+    Role role
+}

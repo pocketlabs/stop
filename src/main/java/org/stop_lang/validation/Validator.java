@@ -19,13 +19,12 @@ public class  Validator {
         return validate(input);
     }
 
-    public static boolean
-    validate(CharStream input) {
-        Map<String, State> states = getStates(input);
-        return states != null;
+    public static boolean validate(CharStream input) {
+        Stop stop = getStop(input);
+        return stop != null;
     }
 
-    public static Map<String, State> getStates(CharStream input) {
+    public static Stop getStop(CharStream input){
         StopLexer l = new StopLexer(input);
         TokenStream tokens = new CommonTokenStream(l);
         StopParser parser = new StopParser(tokens);
@@ -73,6 +72,7 @@ public class  Validator {
         }
 
         TreeMap<String, State> states = new TreeMap<String, State>(String.CASE_INSENSITIVE_ORDER);
+        TreeMap<String, Enumeration> enums = new TreeMap<String, Enumeration>(String.CASE_INSENSITIVE_ORDER);
 
         for (Symbol symbol : def.globals.getSymbols()){
             if (symbol instanceof ModelSymbol){
@@ -95,6 +95,12 @@ public class  Validator {
                     State state = new State(name, type);
                     states.put(name, state);
                 }
+            }
+            if (symbol instanceof EnumSymbol){
+                EnumSymbol enumSymbol = (EnumSymbol)symbol;
+                String name = enumSymbol.getName();
+                Enumeration enumeration = new Enumeration(name, enumSymbol.getValues());
+                enums.put(name, enumeration);
             }
         }
 
@@ -190,11 +196,18 @@ public class  Validator {
 
                         }
                         if(childSymbol instanceof ModelFieldSymbol) {
-                            State fieldState = states.get(stopFieldSymbol.getTypeName());
+                            String fullName = stopFieldSymbol.getFullTypeName();
+                            State fieldState = states.get(fullName);
                             if (fieldState != null) {
                                 property = new StateProperty(symbolName, fieldState, false, provider, optional, ((ModelFieldSymbol)childSymbol).getAsyncMapping());
                             }
                             Enumeration enumeration = enumerations.get(stopFieldSymbol.getTypeName());
+                            if( enumeration==null){
+                                enumeration = enumerations.get(stopFieldSymbol.getFullTypeName());
+                            }
+                            if (enumeration == null){
+                                enumeration = enums.get(fullName);
+                            }
                             if(enumeration!=null){
                                 property = new EnumerationProperty(symbolName, enumeration, false, provider, optional);
                             }
@@ -202,7 +215,7 @@ public class  Validator {
                             CollectionFieldSymbol collectionFieldSymbol = (CollectionFieldSymbol)childSymbol;
                             Property.PropertyType propertyType;
                             if (collectionFieldSymbol.isState()){
-                                String typeName = collectionFieldSymbol.getTypeName();
+                                String typeName = collectionFieldSymbol.getFullTypeName();
                                 State fieldState = states.get(typeName);
                                 property = new StateProperty(symbolName, fieldState, true, provider, optional, collectionFieldSymbol.getAsyncMapping());
                             }else {
@@ -231,7 +244,7 @@ public class  Validator {
             }
         }
 
-        return states;
+        return new Stop(states, enums);
     }
 
     private static boolean handleErrors(List<Exception> exceptions){

@@ -1,9 +1,12 @@
 package org.stop_lang.symbols;
 
 public class ModelFieldSymbol extends StopFieldSymbol {
-    private String modelName;
+    public ModelFieldSymbol(String name, String typeName, String packageName){
+        super(name, typeName, packageName);
+    }
 
-    public ModelFieldSymbol(String name, String typeName){
-        super(name, typeName);
+    @Override
+    public String getFullTypeName(){
+        return getFullModelName(typeName);
     }
 }

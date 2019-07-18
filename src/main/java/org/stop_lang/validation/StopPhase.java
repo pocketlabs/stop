@@ -40,7 +40,7 @@ public class StopPhase extends StopBaseListener {
     }
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
-        String modelName = ctx.MODEL_TYPE().getText();
+        String modelName = ctx.model_type().getText();
         Symbol symbol = globalsResolveWithPackage(modelName);
         if(symbol != null) {
             if (symbol instanceof ModelSymbol){
@@ -57,7 +57,7 @@ public class StopPhase extends StopBaseListener {
     }
 
     @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
-        String modelName = ctx.MODEL_TYPE().getText();
+        String modelName = ctx.model_type().getText();
         Symbol symbol = globalsResolveWithPackage(modelName);
         if(symbol != null) {
             if (symbol instanceof ModelSymbol){

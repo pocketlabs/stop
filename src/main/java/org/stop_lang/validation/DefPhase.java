@@ -52,7 +52,7 @@ public class DefPhase extends StopBaseListener {
     @Override public void exitTimeout(StopParser.TimeoutContext ctx){
         ModelSymbol modelSymbol = (ModelSymbol) currentScope;
         String numberString = ctx.NUMBER().getText();
-        String modelTransitionName = getFullModelName(ctx.transition().MODEL_TYPE().getText());
+        String modelTransitionName = getFullModelName(ctx.transition().model_type().getText());
         modelSymbol.setTimeoutTransition(modelTransitionName);
         int timeout = Integer.parseInt(numberString);
         if(timeout == 0){
@@ -126,13 +126,13 @@ public class DefPhase extends StopBaseListener {
     }
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
-        String modelName = getFullModelName(ctx.MODEL_TYPE().getText());
+        String modelName = getFullModelName(ctx.model_type().getText());
         TransitionSymbol transitionSymbol = new TransitionSymbol(modelName, currentScope);
         currentScope.define(transitionSymbol);
     }
 
     @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
-        String modelName = getFullModelName(ctx.MODEL_TYPE().getText());
+        String modelName = getFullModelName(ctx.model_type().getText());
         EnqueueSymbol enqueueSymbol = new EnqueueSymbol(modelName, currentScope);
         currentScope.define(enqueueSymbol);
     }
@@ -140,7 +140,7 @@ public class DefPhase extends StopBaseListener {
     @Override public void exitThrow_parameter(StopParser.Throw_parameterContext ctx) {
         if (currentScope instanceof  ModelSymbol){
             ModelSymbol modelSymbol = (ModelSymbol)currentScope;
-            String modelName = ctx.MODEL_TYPE().getText();
+            String modelName = ctx.model_type().getText();
             modelSymbol.addErrorType(getFullModelName(modelName));
         }
     }

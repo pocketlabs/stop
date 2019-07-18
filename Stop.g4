@@ -121,14 +121,14 @@ throw_type
     ;
 
 throw_parameter
-    : MODEL_TYPE
+    : model_type
     ;
 
 timeout: 'timeout' NUMBER transition;
 
-transition: TRANSITION_OP MODEL_TYPE;
+transition: TRANSITION_OP model_type;
 
-enqueue: ENQUEUE_OP MODEL_TYPE;
+enqueue: ENQUEUE_OP model_type;
 
 
 // Tokens

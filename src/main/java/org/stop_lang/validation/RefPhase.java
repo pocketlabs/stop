@@ -151,7 +151,7 @@ public class RefPhase extends StopBaseListener {
     }
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
-        String modelName = ctx.MODEL_TYPE().getText();
+        String modelName = ctx.model_type().getText();
         Symbol modelSymbol = globalsResolveWithPackage(modelName);
         if(modelSymbol == null){
             errors.add(new StopValidationException("Couldn't define transition because " + modelName + " isn't defined"));
@@ -159,7 +159,7 @@ public class RefPhase extends StopBaseListener {
     }
 
     @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
-        String modelName = ctx.MODEL_TYPE().getText();
+        String modelName = ctx.model_type().getText();
         Symbol modelSymbol = globalsResolveWithPackage(modelName);
         if(modelSymbol == null){
             errors.add(new StopValidationException("Couldn't define enqueue because " + modelName + " isn't defined"));
@@ -206,8 +206,8 @@ public class RefPhase extends StopBaseListener {
     }
 
     @Override public void exitThrow_parameter(StopParser.Throw_parameterContext ctx) {
-        if (ctx.MODEL_TYPE()!=null){
-            String modelName = ctx.MODEL_TYPE().getText();
+        if (ctx.model_type()!=null){
+            String modelName = ctx.model_type().getText();
             Symbol modelSymbol = globalsResolveWithPackage(modelName);
             if(modelSymbol == null){
                 errors.add(new StopValidationException("Couldn't define thrown transition because "
@@ -217,8 +217,8 @@ public class RefPhase extends StopBaseListener {
     }
 
     @Override public void exitTimeout(StopParser.TimeoutContext ctx) {
-        if (ctx.transition().MODEL_TYPE()!=null){
-            String modelName = ctx.transition().MODEL_TYPE().getText();
+        if (ctx.transition().model_type()!=null){
+            String modelName = ctx.transition().model_type().getText();
             Symbol modelSymbol = globalsResolveWithPackage(modelName);
             if(modelSymbol == null){
                 errors.add(new StopValidationException("Couldn't define timeout transition because "

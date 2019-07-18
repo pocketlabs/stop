@@ -45,6 +45,17 @@ public class RuntimeTest {
     }
 
     @Test
+    public void included() throws Exception {
+        HelloRuntime runtime = new HelloRuntime();
+        HelloRuntimeBase startInstance = new HelloRuntimeBase("IncludeTest");
+        HelloRuntimeBase stop = runtime.getRuntime().start(startInstance);
+        Assert.assertNotNull(stop);
+        Assert.assertNotNull(runtime.getRuntime().getStop());
+        Assert.assertEquals(stop.getName(), "test.models.C");
+        Assert.assertEquals(stop.get("wow"), "now");
+    }
+
+    @Test
     public void timeout() throws Exception {
         HelloRuntime runtime = new HelloRuntime();
         HelloRuntimeBase startInstance = new HelloRuntimeBase("Z");

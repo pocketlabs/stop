@@ -1,3 +1,5 @@
+include "./examples/package-include.stop"
+
 start A {
     string test1
     -> B
@@ -155,4 +157,8 @@ stop C {
 
 Iso {
 
+}
+
+start IncludeTest {
+    -> test.models.C
 }

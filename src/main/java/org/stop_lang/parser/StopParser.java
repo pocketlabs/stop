@@ -2117,7 +2117,9 @@ public class StopParser extends Parser {
 	}
 
 	public static class Throw_parameterContext extends ParserRuleContext {
-		public TerminalNode MODEL_TYPE() { return getToken(StopParser.MODEL_TYPE, 0); }
+		public Model_typeContext model_type() {
+			return getRuleContext(Model_typeContext.class,0);
+		}
 		public Throw_parameterContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2139,7 +2141,7 @@ public class StopParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(305);
-			match(MODEL_TYPE);
+			model_type();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2199,7 +2201,9 @@ public class StopParser extends Parser {
 
 	public static class TransitionContext extends ParserRuleContext {
 		public TerminalNode TRANSITION_OP() { return getToken(StopParser.TRANSITION_OP, 0); }
-		public TerminalNode MODEL_TYPE() { return getToken(StopParser.MODEL_TYPE, 0); }
+		public Model_typeContext model_type() {
+			return getRuleContext(Model_typeContext.class,0);
+		}
 		public TransitionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2223,7 +2227,7 @@ public class StopParser extends Parser {
 			setState(311);
 			match(TRANSITION_OP);
 			setState(312);
-			match(MODEL_TYPE);
+			model_type();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2239,7 +2243,9 @@ public class StopParser extends Parser {
 
 	public static class EnqueueContext extends ParserRuleContext {
 		public TerminalNode ENQUEUE_OP() { return getToken(StopParser.ENQUEUE_OP, 0); }
-		public TerminalNode MODEL_TYPE() { return getToken(StopParser.MODEL_TYPE, 0); }
+		public Model_typeContext model_type() {
+			return getRuleContext(Model_typeContext.class,0);
+		}
 		public EnqueueContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2263,7 +2269,7 @@ public class StopParser extends Parser {
 			setState(314);
 			match(ENQUEUE_OP);
 			setState(315);
-			match(MODEL_TYPE);
+			model_type();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2406,12 +2412,12 @@ public class StopParser extends Parser {
 		"\67\3\2\2\2\u012a\u012b\7\37\2\2\u012b\u0130\5:\36\2\u012c\u012d\7\32"+
 		"\2\2\u012d\u012f\5:\36\2\u012e\u012c\3\2\2\2\u012f\u0132\3\2\2\2\u0130"+
 		"\u012e\3\2\2\2\u0130\u0131\3\2\2\2\u01319\3\2\2\2\u0132\u0130\3\2\2\2"+
-		"\u0133\u0134\7+\2\2\u0134;\3\2\2\2\u0135\u0136\7 \2\2\u0136\u0137\7*\2"+
-		"\2\u0137\u0138\5> \2\u0138=\3\2\2\2\u0139\u013a\7%\2\2\u013a\u013b\7+"+
-		"\2\2\u013b?\3\2\2\2\u013c\u013d\7\'\2\2\u013d\u013e\7+\2\2\u013eA\3\2"+
-		"\2\2)CHJT^bfjnrx\u0080\u0088\u008c\u0091\u0095\u009e\u00a3\u00a7\u00b1"+
-		"\u00b6\u00ba\u00c1\u00c6\u00ca\u00d2\u00db\u00e7\u00ec\u00f1\u00f4\u00f9"+
-		"\u00fb\u0100\u0108\u0119\u0120\u0128\u0130";
+		"\u0133\u0134\5\36\20\2\u0134;\3\2\2\2\u0135\u0136\7 \2\2\u0136\u0137\7"+
+		"*\2\2\u0137\u0138\5> \2\u0138=\3\2\2\2\u0139\u013a\7%\2\2\u013a\u013b"+
+		"\5\36\20\2\u013b?\3\2\2\2\u013c\u013d\7\'\2\2\u013d\u013e\5\36\20\2\u013e"+
+		"A\3\2\2\2)CHJT^bfjnrx\u0080\u0088\u008c\u0091\u0095\u009e\u00a3\u00a7"+
+		"\u00b1\u00b6\u00ba\u00c1\u00c6\u00ca\u00d2\u00db\u00e7\u00ec\u00f1\u00f4"+
+		"\u00f9\u00fb\u0100\u0108\u0119\u0120\u0128\u0130";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

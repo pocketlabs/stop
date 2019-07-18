@@ -13,3 +13,7 @@ GetUser <- User {
     string uuid
     Role role
 }
+
+stop C {
+    string wow
+}

@@ -5,6 +5,7 @@ include "./examples/package-include.stop"
 start A {
     string path
     -> B
+    -> test.models.C
 }
 
 stop B {

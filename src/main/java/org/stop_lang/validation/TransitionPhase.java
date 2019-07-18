@@ -40,7 +40,7 @@ public class TransitionPhase extends StopBaseListener {
     }
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
-        String modelName = getFullModelName(ctx.MODEL_TYPE().getText());
+        String modelName = getFullModelName(ctx.model_type().getText());
         ModelSymbol modelSymbol = null;
         if (currentScope instanceof ModelSymbol){
             if (ctx.getParent() instanceof StopParser.TimeoutContext){
@@ -68,7 +68,7 @@ public class TransitionPhase extends StopBaseListener {
     }
 
     @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
-        String modelName = ctx.MODEL_TYPE().getText();
+        String modelName = ctx.model_type().getText();
         ModelSymbol modelSymbol = null;
         if (currentScope instanceof ModelSymbol){
             modelSymbol = (ModelSymbol) currentScope;
@@ -92,7 +92,7 @@ public class TransitionPhase extends StopBaseListener {
     }
 
     @Override public void exitThrow_parameter(StopParser.Throw_parameterContext ctx) {
-        String modelName = ctx.MODEL_TYPE().getText();
+        String modelName = ctx.model_type().getText();
         ModelSymbol modelSymbol = (ModelSymbol)currentScope;
 
         Symbol symbol = globalsResolveWithPackage(modelName);

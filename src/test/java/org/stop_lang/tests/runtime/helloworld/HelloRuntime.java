@@ -36,6 +36,11 @@ public class HelloRuntime implements StopRuntimeImplementation<HelloRuntimeBase>
     @Override
     public HelloRuntimeBase execute(HelloRuntimeBase implementationInstance, StopRuntimeImplementationExecution<HelloRuntimeBase> execution) throws StopRuntimeErrorException {
         System.out.println("execute! " + implementationInstance.getName());
+        if (implementationInstance.getName().equalsIgnoreCase("IncludeTest")){
+            HelloRuntimeBase b = new HelloRuntimeBase("test.models.C");
+            b.put("wow", "now");
+            return b;
+        }
         if (implementationInstance.getName().equalsIgnoreCase("A")){
             HelloRuntimeBase b = new HelloRuntimeBase("B");
             b.put("test2", "test2");

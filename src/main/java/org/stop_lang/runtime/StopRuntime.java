@@ -12,11 +12,25 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
     private ExecutorService executor;
     private StateInstance currentStateInstance = null;
     private List<StateInstance> orderedStates = new ArrayList<StateInstance>();
+    private Map<String, StopRuntimeImplementation<StateInstance>> packageImplementations;
+    private StopRuntimeImplementationExecution<StateInstance> packageImplementationRuntimeImplementationExecution;
 
     public StopRuntime(Stop stop, StopRuntimeImplementation<T> implementation){
         this.stop = stop;
         this.implementation = implementation;
         this.executor = Executors.newFixedThreadPool(1);
+        this.packageImplementations = new HashMap<>();
+        this.packageImplementationRuntimeImplementationExecution = new StopRuntimeImplementationExecution<StateInstance>() {
+            @Override
+            public void queue(StateInstance implementationInstance) throws StopRuntimeException, StopValidationException {
+                packageImplementationRuntimeImplementationExecutionQueue(implementationInstance);
+            }
+
+            @Override
+            public void log(String message) {
+                packageImplementationRuntimeImplementationExecutionLog(message);
+            }
+        };
     }
 
     public Stop getStop(){
@@ -62,6 +76,14 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
 
     public List<StateInstance> getOrderedStates(){
         return this.orderedStates;
+    }
+
+    public void addPackageImplementation(String packageName, StopRuntimeImplementation<StateInstance> packageImplementation ){
+        this.packageImplementations.put(packageName, packageImplementation);
+    }
+
+    public void removePackageImplement(String packageName){
+        this.packageImplementations.remove(packageName);
     }
 
     private T start(StateInstance to) throws StopRuntimeException, StopValidationException {
@@ -117,11 +139,10 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
             T nextImplementationInstance = null;
             if (stateInstance.getState() instanceof AsyncState){
                 AsyncState asyncState = (AsyncState)stateInstance.getState();
-                final StopRuntime<T> self = this;
                 Future<T> future = executor.submit(new Callable<T>() {
                     @Override
                     public T call() throws Exception {
-                        return implementation.execute(implementationInstance, self);
+                        return executeWithPackageImplementations(implementationInstance);
                     }
                 });
 
@@ -151,7 +172,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                     throw new StopRuntimeException(e.getMessage());
                 }
             } else {
-                nextImplementationInstance = implementation.execute(implementationInstance, this);
+                nextImplementationInstance = executeWithPackageImplementations(implementationInstance);
             }
 
             if (nextImplementationInstance != null) {
@@ -271,11 +292,10 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
 
                             if (providerState instanceof AsyncState){
                                 AsyncState asyncProviderState = (AsyncState)providerState;
-                                final StopRuntime<T> self = this;
                                 Future<Collection> future = executor.submit(new Callable<Collection>() {
                                     @Override
                                     public Collection call() throws Exception {
-                                        return implementation.executeAndReturnCollection(providerImplementationInstance, self);
+                                        return executeAndReturnCollectionWithPackageImplementations(providerImplementationInstance);
                                     }
                                 });
 
@@ -304,7 +324,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                                     throw new StopRuntimeException(e.getMessage());
                                 }
                             }else {
-                                collection = implementation.executeAndReturnCollection(providerImplementationInstance, this);
+                                collection = executeAndReturnCollectionWithPackageImplementations(providerImplementationInstance);
                             }
 
                             if (providerState.getReturnState() != null) {
@@ -322,11 +342,10 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
 
                             if (providerState instanceof AsyncState){
                                 AsyncState asyncProviderState = (AsyncState)providerState;
-                                final StopRuntime<T> self = this;
                                 Future<Object> future = executor.submit(new Callable<Object>() {
                                     @Override
                                     public Object call() throws Exception {
-                                        return implementation.executeAndReturnValue(providerImplementationInstance, self);
+                                        return executeAndReturnValueWithPackageImplementations(providerImplementationInstance);
                                     }
                                 });
 
@@ -355,7 +374,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                                     throw new StopRuntimeException(e.getMessage());
                                 }
                             }else{
-                                returnValue = implementation.executeAndReturnValue(providerImplementationInstance, this);
+                                returnValue = executeAndReturnValueWithPackageImplementations(providerImplementationInstance);
                             }
 
                             if (returnValue!=null) {
@@ -493,5 +512,61 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
             }
         }
         return true;
+    }
+
+    private T executeWithPackageImplementations(T implementationInstance) throws StopRuntimeErrorException, StopRuntimeException{
+        if (!packageImplementations.isEmpty()){
+            StateInstance stateInstance = implementation.buildStateInstance(implementationInstance);
+            String stateName = stateInstance.getState().getName();
+            for (Map.Entry<String, StopRuntimeImplementation<StateInstance>> packageImplementation : packageImplementations.entrySet()){
+                if (stateName.startsWith(packageImplementation.getKey()+".")){
+                    StateInstance returnStateInstance = packageImplementation.getValue().execute(stateInstance, packageImplementationRuntimeImplementationExecution);
+                    if (returnStateInstance!=null) {
+                        return implementation.buildImplementationInstance(returnStateInstance);
+                    }
+                    return null;
+                }
+            }
+        }
+
+        return implementation.execute(implementationInstance, this);
+    }
+
+    private Object executeAndReturnValueWithPackageImplementations(T implementationInstance) throws StopRuntimeErrorException, StopRuntimeException{
+        if (!packageImplementations.isEmpty()){
+            StateInstance stateInstance = implementation.buildStateInstance(implementationInstance);
+            String stateName = stateInstance.getState().getName();
+            for (Map.Entry<String, StopRuntimeImplementation<StateInstance>> packageImplementation : packageImplementations.entrySet()){
+                if (stateName.startsWith(packageImplementation.getKey()+".")){
+                    Object returnObject = packageImplementation.getValue().executeAndReturnValue(stateInstance, packageImplementationRuntimeImplementationExecution);
+                    return returnObject;
+                }
+            }
+        }
+
+        return implementation.executeAndReturnValue(implementationInstance, this);
+    }
+
+    private Collection executeAndReturnCollectionWithPackageImplementations(T implementationInstance) throws StopRuntimeErrorException, StopRuntimeException{
+        if (!packageImplementations.isEmpty()){
+            StateInstance stateInstance = implementation.buildStateInstance(implementationInstance);
+            String stateName = stateInstance.getState().getName();
+            for (Map.Entry<String, StopRuntimeImplementation<StateInstance>> packageImplementation : packageImplementations.entrySet()){
+                if (stateName.startsWith(packageImplementation.getKey()+".")){
+                    Collection returnCollection = packageImplementation.getValue().executeAndReturnCollection(stateInstance, packageImplementationRuntimeImplementationExecution);
+                    return returnCollection;
+                }
+            }
+        }
+
+        return implementation.executeAndReturnCollection(implementationInstance, this);
+    }
+
+    private void packageImplementationRuntimeImplementationExecutionQueue(StateInstance stateInstance) throws StopRuntimeException, StopValidationException {
+        queue(implementation.buildImplementationInstance(stateInstance));
+    }
+
+    private void packageImplementationRuntimeImplementationExecutionLog(String message) {
+        log(message);
     }
 }

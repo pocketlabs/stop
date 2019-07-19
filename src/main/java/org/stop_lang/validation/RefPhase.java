@@ -44,6 +44,7 @@ public class RefPhase extends StopBaseListener {
     @Override public void exitField(StopParser.FieldContext ctx) {
         String name = ctx.ID().getSymbol().getText();
         Symbol symbol = currentScope.resolve(name);
+        String asyncSource = null;
         if (symbol instanceof ModelFieldSymbol){
             ModelFieldSymbol modelFieldSymbol = (ModelFieldSymbol)symbol;
             String modelName = modelFieldSymbol.getFullTypeName();
@@ -56,6 +57,8 @@ public class RefPhase extends StopBaseListener {
                     errors.add(new StopValidationException("Couldn't define field \""+
                             name +"\" because " + modelName + " isn't defined"));
                 }
+            }else{
+                asyncSource = modelFieldSymbol.getAsyncSource();
             }
         }
         if (symbol instanceof CollectionFieldSymbol){
@@ -70,10 +73,12 @@ public class RefPhase extends StopBaseListener {
                     errors.add(new StopValidationException("Couldn't define collection field \"" +
                             name + "\" because " + modelName + " isn't defined"));
                 }
+            }else{
+                asyncSource = collectionFieldSymbol.getAsyncSource();
             }
         }
-        if (ctx.async_source() != null){
-            String modelName = ctx.async_source().model_type().getText();
+        if (asyncSource != null){
+            String modelName = asyncSource;
             Symbol modelSymbol = globalsResolveWithPackage(modelName);
             if(modelSymbol == null){
                 errors.add(new StopValidationException("Couldn't define field \""+
@@ -84,10 +89,18 @@ public class RefPhase extends StopBaseListener {
                 boolean isCollection = false;
 
                 if (ctx.type()!=null){
-                    typeString = getFullModelName(ctx.type().getText());
+                    if (ctx.type().model_type()!=null) {
+                        typeString = getFullModelName(ctx.type().model_type().getText());
+                    }else{
+                        typeString = ctx.type().scalar_type().getText();
+                    }
                 }else if (ctx.collection()!=null){
                     isCollection = true;
-                    typeString = getFullModelName(ctx.collection().type().getText());
+                    if (ctx.collection().type().model_type()!=null) {
+                        typeString = getFullModelName(ctx.collection().type().model_type().getText());
+                    }else{
+                        typeString = ctx.collection().type().scalar_type().getText();
+                    }
                 }
                 if ((typeString!= null) && !(typeString.equals(theModelSymbol.getReturnType()) && (theModelSymbol.isReturnCollection()==isCollection))){
                     errors.add(new StopValidationException("Couldn't define field \""+

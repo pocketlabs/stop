@@ -5,7 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.stop_lang.models.Enumeration;
 import org.stop_lang.models.EnumerationInstance;
 import org.stop_lang.models.StateInstance;
+import org.stop_lang.runtime.StopRuntimeErrorException;
 import org.stop_lang.runtime.StopRuntimeException;
+import org.stop_lang.runtime.StopRuntimeImplementation;
+import org.stop_lang.runtime.StopRuntimeImplementationExecution;
 import org.stop_lang.tests.runtime.dynamic.DynamicRuntime;
 import org.stop_lang.tests.runtime.dynamic.DynamicRuntimeBase;
 import org.stop_lang.tests.runtime.enums.EnumRuntime;
@@ -13,6 +16,9 @@ import org.stop_lang.tests.runtime.enums.EnumRuntimeBase;
 import org.stop_lang.tests.runtime.helloworld.HelloRuntime;
 import org.stop_lang.tests.runtime.helloworld.HelloRuntimeBase;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,6 +54,60 @@ public class RuntimeTest {
     public void included() throws Exception {
         HelloRuntime runtime = new HelloRuntime();
         HelloRuntimeBase startInstance = new HelloRuntimeBase("IncludeTest");
+        runtime.getRuntime().addPackageImplementation("test.models", new StopRuntimeImplementation<StateInstance>() {
+            @Override
+            public StateInstance buildStateInstance(StateInstance implementationInstance) throws StopRuntimeException {
+                return implementationInstance;
+            }
+
+            @Override
+            public StateInstance buildImplementationInstance(StateInstance stateInstance) throws StopRuntimeException {
+                return stateInstance;
+            }
+
+            @Override
+            public StateInstance execute(StateInstance implementationInstance, StopRuntimeImplementationExecution<StateInstance> execution) throws StopRuntimeErrorException, StopRuntimeException {
+                Assert.assertEquals("now", implementationInstance.getProperties().get("wow"));
+                Assert.assertEquals("cvalue", implementationInstance.getProperties().get("cvalue"));
+                Assert.assertEquals(3, ((Collection<String>)implementationInstance.getProperties().get("dcollection")).size());
+                return null;
+            }
+
+            @Override
+            public Object executeAndReturnValue(StateInstance implementationInstance, StopRuntimeImplementationExecution<StateInstance> execution) throws StopRuntimeErrorException, StopRuntimeException {
+                if ( implementationInstance.getState().getName().equalsIgnoreCase("test.models.GetCValue")){
+                    return "cvalue";
+                }
+                return null;
+            }
+
+            @Override
+            public Collection executeAndReturnCollection(StateInstance implementationInstance, StopRuntimeImplementationExecution<StateInstance> execution) throws StopRuntimeErrorException, StopRuntimeException {
+                if ( implementationInstance.getState().getName().equalsIgnoreCase("test.models.GetDCollection")){
+                    List<String> collection = new ArrayList<>();
+                    collection.add("one");
+                    collection.add("two");
+                    collection.add("three");
+                    return collection;
+                }
+                return null;
+            }
+
+            @Override
+            public void enqueue(StateInstance implementationInstance) {
+
+            }
+
+            @Override
+            public void enqueue(StateInstance implementationInstance, Integer delayInSeconds) {
+
+            }
+
+            @Override
+            public void log(String message) {
+
+            }
+        });
         HelloRuntimeBase stop = runtime.getRuntime().start(startInstance);
         Assert.assertNotNull(stop);
         Assert.assertNotNull(runtime.getRuntime().getStop());

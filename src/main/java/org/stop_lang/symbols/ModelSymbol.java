@@ -52,11 +52,19 @@ public class ModelSymbol extends SymbolWithScope {
         if (ctx.return_type()!=null){
             if (ctx.return_type().collection() != null) {
                 if (ctx.return_type().collection().type() != null) {
-                    returnType = getFullModelName(ctx.return_type().collection().type().getText());
+                    if (ctx.return_type().collection().type().model_type()!=null) {
+                        returnType = getFullModelName(ctx.return_type().collection().type().getText());
+                    }else{
+                        returnType = ctx.return_type().collection().type().scalar_type().getText();
+                    }
                     returnCollection = true;
                 }
             }else if(ctx.return_type().type() != null){
-                returnType = getFullModelName(ctx.return_type().type().getText());
+                if (ctx.return_type().type().model_type()!=null) {
+                    returnType = getFullModelName(ctx.return_type().type().getText());
+                }else{
+                    returnType = ctx.return_type().type().scalar_type().getText();
+                }
                 returnCollection = false;
             }
         }

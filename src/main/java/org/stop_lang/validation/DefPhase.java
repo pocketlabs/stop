@@ -98,7 +98,7 @@ public class DefPhase extends StopBaseListener {
             field = new ModelFieldSymbol(fieldName, modelName, packageNameForField);
         }else if (ctx.type()!=null && ctx.type().scalar_type() != null){
             String typeName = ctx.type().scalar_type().getText();
-            field = new ScalarFieldSymbol(fieldName, typeName, packageNameForField);
+            field = new ScalarFieldSymbol(fieldName, typeName);
         }else if (ctx.collection() != null && ctx.collection().type() != null){
             String typeName = ctx.collection().type().getText();
             boolean isState = ctx.collection().type().model_type() != null;
@@ -106,7 +106,7 @@ public class DefPhase extends StopBaseListener {
         }
         if(field != null){
             if (ctx.async_source() != null){
-                String asyncModel = getFullModelName(ctx.async_source().model_type().getText());
+                String asyncModel = getFullModelName(ctx.async_source().model_type().getText(), packageNameForField);
                 field.setAsyncSource(asyncModel);
 
                 if (ctx.async_source().async_source_mapping() != null){
@@ -154,6 +154,13 @@ public class DefPhase extends StopBaseListener {
             return packageName + "." + name;
         }
         return name;
+    }
+
+    private String getFullModelName(String name, String packageNameForField){
+        if (!isReference(name) && (packageNameForField!=null)){
+            return packageNameForField + "." + name;
+        }
+        return getFullModelName(name);
     }
 
     private boolean isReference(String name){

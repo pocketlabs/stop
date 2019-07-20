@@ -3,16 +3,13 @@ package org.stop_lang.validation;
 import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.Scope;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.stop_lang.parser.StopBaseListener;
 import org.stop_lang.parser.StopParser;
 import org.stop_lang.symbols.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DefPhase extends StopBaseListener {
     public ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
@@ -43,7 +40,7 @@ public class DefPhase extends StopBaseListener {
 
     @Override public void exitModel(StopParser.ModelContext ctx) {
         ModelSymbol modelSymbol = (ModelSymbol) currentScope;
-        if (modelSymbol.getAsync() && (modelSymbol.getTimeout() == 0)){
+        if (modelSymbol.isAsync() && (modelSymbol.getTimeout() == null)){
             errors.add(new StopValidationException("Asynchronous states " + modelSymbol.getName() + " must have a timeout defined"));
         }
         currentScope = currentScope.getEnclosingScope();
@@ -52,13 +49,12 @@ public class DefPhase extends StopBaseListener {
     @Override public void exitTimeout(StopParser.TimeoutContext ctx){
         ModelSymbol modelSymbol = (ModelSymbol) currentScope;
         String numberString = ctx.NUMBER().getText();
-        String modelTransitionName = getFullModelName(ctx.transition().model_type().getText());
-        modelSymbol.setTimeoutTransition(modelTransitionName);
         int timeout = Integer.parseInt(numberString);
         if(timeout == 0){
             errors.add(new StopValidationException("Timeout must be greater than zero for " + modelSymbol.getName()));
         }else {
-            modelSymbol.setTimeout(timeout);
+            TimeoutSymbol timeoutSymbol = new TimeoutSymbol(ctx, currentScope, packageName);
+            modelSymbol.setTimeout(timeoutSymbol);
         }
     }
 
@@ -82,41 +78,20 @@ public class DefPhase extends StopBaseListener {
     }
 
     @Override public void exitField(StopParser.FieldContext ctx) {
-        String fieldName = ctx.ID().getText();
         StopFieldSymbol field = null;
 
-        String packageNameForField=null;
-
-        ParseTree p = ctx.getParent().getParent().getParent().getParent().getChild(0);
-        if (p!=null && (p instanceof StopParser.PackageDeclarationContext)){
-            StopParser.PackageDeclarationContext decl = (StopParser.PackageDeclarationContext)p;
-            packageNameForField = decl.packageName().getText();
-        }
-
         if (ctx.type() != null && ctx.type().model_type() != null) {
-            String modelName = ctx.type().model_type().getText();
-            field = new ModelFieldSymbol(fieldName, modelName, packageNameForField);
+            field = new ModelFieldSymbol(ctx, packageName);
         }else if (ctx.type()!=null && ctx.type().scalar_type() != null){
-            String typeName = ctx.type().scalar_type().getText();
-            field = new ScalarFieldSymbol(fieldName, typeName);
+            field = new ScalarFieldSymbol(ctx);
         }else if (ctx.collection() != null && ctx.collection().type() != null){
-            String typeName = ctx.collection().type().getText();
-            boolean isState = ctx.collection().type().model_type() != null;
-            field = new CollectionFieldSymbol(fieldName, typeName, isState, packageNameForField);
+            field = new CollectionFieldSymbol(ctx, packageName);
         }
+
         if(field != null){
             if (ctx.async_source() != null){
-                String asyncModel = getFullModelName(ctx.async_source().model_type().getText(), packageNameForField);
-                field.setAsyncSource(asyncModel);
-
-                if (ctx.async_source().async_source_mapping() != null){
-                    Map<String, String> asyncSourceMapping = new HashMap<String, String>();
-                    for (StopParser.Async_source_mapping_parameterContext parameterContext :
-                            ctx.async_source().async_source_mapping().async_source_mapping_parameter()){
-                        asyncSourceMapping.put(parameterContext.ID().getText(), parameterContext.async_source_mapping_parameter_rename().getText());
-                    }
-                    field.setAsyncMapping(asyncSourceMapping);
-                }
+                DynamicModelSymbol dynamicModelSymbol = new DynamicModelSymbol(ctx, currentScope, packageName);
+                field.setDynamicModel(dynamicModelSymbol);
             }
             if ( ctx.OPTIONAL() != null){
                 field.setOptional(true);
@@ -126,44 +101,28 @@ public class DefPhase extends StopBaseListener {
     }
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
-        String modelName = getFullModelName(ctx.model_type().getText());
-        TransitionSymbol transitionSymbol = new TransitionSymbol(modelName, currentScope);
-        currentScope.define(transitionSymbol);
+        TransitionSymbol transitionSymbol = new TransitionSymbol(ctx, currentScope, packageName);
+        if (currentScope instanceof  ModelSymbol){
+            ((ModelSymbol)currentScope).addTransition(transitionSymbol);
+        }
     }
 
     @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
-        String modelName = getFullModelName(ctx.model_type().getText());
-        EnqueueSymbol enqueueSymbol = new EnqueueSymbol(modelName, currentScope);
-        currentScope.define(enqueueSymbol);
+        EnqueueSymbol enqueueSymbol = new EnqueueSymbol(ctx, currentScope, packageName);
+        if (currentScope instanceof  ModelSymbol){
+            ((ModelSymbol)currentScope).addEnqueue(enqueueSymbol);
+        }
     }
 
     @Override public void exitThrow_parameter(StopParser.Throw_parameterContext ctx) {
         if (currentScope instanceof  ModelSymbol){
             ModelSymbol modelSymbol = (ModelSymbol)currentScope;
-            String modelName = ctx.model_type().getText();
-            modelSymbol.addErrorType(getFullModelName(modelName));
+            ThrowSymbol throwSymbol = new ThrowSymbol(ctx, currentScope, packageName);
+            modelSymbol.addError(throwSymbol);
         }
     }
 
     void saveScope(ParserRuleContext ctx, Scope s){
         scopes.put(ctx, s);
-    }
-
-    private String getFullModelName(String name){
-        if (!isReference(name) && (packageName!=null)){
-            return packageName + "." + name;
-        }
-        return name;
-    }
-
-    private String getFullModelName(String name, String packageNameForField){
-        if (!isReference(name) && (packageNameForField!=null)){
-            return packageNameForField + "." + name;
-        }
-        return getFullModelName(name);
-    }
-
-    private boolean isReference(String name){
-        return name.contains(".");
     }
 }

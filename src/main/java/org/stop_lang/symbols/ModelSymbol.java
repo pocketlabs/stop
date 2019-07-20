@@ -5,21 +5,18 @@ import org.antlr.symtab.SymbolWithScope;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.stop_lang.parser.StopParser;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ModelSymbol extends SymbolWithScope {
     private boolean async = false;
     private boolean stop =false;
     private boolean start =false;
     private boolean queue = false;
-    private List<String> errorTypes = new ArrayList<String>();
-    private List<String> transitions = new ArrayList<String>();
-    private List<String> enqueue = new ArrayList<String>();
-    private int timeout = 0;
-    private String timeoutTransition = null;
-    private String returnType = null;
-    private boolean returnCollection = false;
+    private Map<StopParser.Throw_parameterContext, ThrowSymbol> errors = new HashMap<>();
+    private Map<StopParser.TransitionContext, TransitionSymbol> transitions = new HashMap<>();
+    private Map<StopParser.EnqueueContext, EnqueueSymbol> enqueues = new HashMap<>();
+    private TimeoutSymbol timeout;
+    private ReturnSymbol returnSymbol = null;
     private String fullName;
     private String packageName;
 
@@ -50,23 +47,7 @@ public class ModelSymbol extends SymbolWithScope {
         }
 
         if (ctx.return_type()!=null){
-            if (ctx.return_type().collection() != null) {
-                if (ctx.return_type().collection().type() != null) {
-                    if (ctx.return_type().collection().type().model_type()!=null) {
-                        returnType = getFullModelName(ctx.return_type().collection().type().getText());
-                    }else{
-                        returnType = ctx.return_type().collection().type().scalar_type().getText();
-                    }
-                    returnCollection = true;
-                }
-            }else if(ctx.return_type().type() != null){
-                if (ctx.return_type().type().model_type()!=null) {
-                    returnType = getFullModelName(ctx.return_type().type().getText());
-                }else{
-                    returnType = ctx.return_type().type().scalar_type().getText();
-                }
-                returnCollection = false;
-            }
+            returnSymbol = new ReturnSymbol(ctx, enclosingScope, packageName);
         }
 
         fullName = name;
@@ -81,75 +62,64 @@ public class ModelSymbol extends SymbolWithScope {
         return packageName;
     }
 
-    public boolean getAsync(){
+    public boolean isAsync(){
         return async;
     }
-    public boolean getStop(){
+    public boolean isStop(){
         return stop;
     }
-    public boolean getStart(){
+    public boolean isStart(){
         return start;
     }
-    public boolean getQueue(){
+    public boolean isQueue(){
         return queue;
     }
 
-    public String getReturnType(){
-        return returnType;
+    public ReturnSymbol getReturn(){
+        return returnSymbol;
     }
 
-    public boolean isReturnCollection(){
-        return returnCollection;
+    public Collection<ThrowSymbol> getErrors(){
+        return errors.values();
     }
 
-    public List<String> getErrorTypes(){
-        return errorTypes;
+    public void addError(ThrowSymbol throwSymbol){
+        errors.put(throwSymbol.getContext(), throwSymbol);
     }
 
-    public void addErrorType(String t){
-        errorTypes.add(t);
+    public ThrowSymbol getError(StopParser.Throw_parameterContext ctx){
+        return errors.get(ctx);
     }
 
-    public void addTransition(String transition){
-        transitions.add(transition);
+    public void addTransition(TransitionSymbol transition){
+        transitions.put(transition.getContext(), transition);
     }
 
-    public List<String> getTransitions(){
-        return transitions;
+    public TransitionSymbol getTransition(StopParser.TransitionContext ctx){
+        return transitions.get(ctx);
     }
 
-    public void setTimeoutTransition(String transition){
-        this.timeoutTransition = transition;
+    public Collection<TransitionSymbol> getTransitions(){
+        return transitions.values();
     }
 
-    public String getTimeoutTransition(){
-        return this.timeoutTransition;
-    }
-
-    public void setTimeout(int timeout){
+    public void setTimeout(TimeoutSymbol timeout){
         this.timeout = timeout;
     }
 
-    public int getTimeout(){
+    public TimeoutSymbol getTimeout(){
         return this.timeout;
     }
 
-    public void addEnqueue(String queue){
-        enqueue.add(queue);
+    public void addEnqueue(EnqueueSymbol enqueueSymbol){
+        enqueues.put(enqueueSymbol.getContext(), enqueueSymbol);
     }
 
-    public List<String> getEnqueues(){
-        return enqueue;
+    public EnqueueSymbol getEnqueue(StopParser.EnqueueContext ctx){
+        return enqueues.get(ctx);
     }
 
-    private String getFullModelName(String name){
-        if (!isReference(name) && (packageName!=null)){
-            return packageName + "." + name;
-        }
-        return name;
-    }
-
-    private boolean isReference(String name){
-        return name.contains(".");
+    public Collection<EnqueueSymbol> getEnqueues(){
+        return enqueues.values();
     }
 }

@@ -45,8 +45,6 @@ public class EnumSymbol extends SymbolWithScope {
                 fullName = packageName + "." + name;
             }
         }
-
-
     }
 
     public List<String> getValues(){

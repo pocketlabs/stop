@@ -160,5 +160,5 @@ Iso {
 }
 
 start IncludeTest {
-    -> test.models.C
+    -> test.models.D
 }

@@ -6,17 +6,17 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.stop_lang.parser.StopParser;
 
-public class TransitionSymbol  extends SymbolWithScope {
-    private String packageName;
+public class ThrowSymbol extends SymbolWithScope {
     private String fullName;
-    private StopParser.TransitionContext ctx;
+    private String packageName;
+    private StopParser.Throw_parameterContext ctx;
 
-    public TransitionSymbol(StopParser.TransitionContext ctx, Scope enclosingScope, String defaultPackageName){
+    public ThrowSymbol(StopParser.Throw_parameterContext ctx, Scope enclosingScope, String defaultPackageName){
         super(ctx.model_type().getText());
         setScope(enclosingScope);
         this.ctx = ctx;
-        packageName = defaultPackageName;
         String name = ctx.model_type().getText();
+        packageName = defaultPackageName;
 
         if (!isReference(name)) {
             ParseTree p = getRootContext(ctx).getChild(0);
@@ -42,12 +42,8 @@ public class TransitionSymbol  extends SymbolWithScope {
         return packageName;
     }
 
-    public StopParser.TransitionContext getContext(){
+    public StopParser.Throw_parameterContext getContext(){
         return ctx;
-    }
-
-    private boolean isReference(String name){
-        return name.contains(".");
     }
 
     private ParserRuleContext getRootContext(ParserRuleContext ctx){
@@ -55,5 +51,9 @@ public class TransitionSymbol  extends SymbolWithScope {
             return ctx;
         }
         return getRootContext(ctx.getParent());
+    }
+
+    protected boolean isReference(String name){
+        return name.contains(".");
     }
 }

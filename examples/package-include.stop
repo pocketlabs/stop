@@ -22,6 +22,10 @@ GetDCollection <- [string] {
 
 }
 
+D {
+    -> C
+}
+
 stop C {
     string cvalue <- GetCValue
     [string] dcollection <- GetDCollection

@@ -1,44 +1,53 @@
 package org.stop_lang.symbols;
 
 import org.antlr.symtab.FieldSymbol;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.stop_lang.parser.StopParser;
 
-import java.util.Map;
-
-public class StopFieldSymbol extends FieldSymbol {
+public abstract class StopFieldSymbol extends FieldSymbol {
     protected String typeName;
-    protected String asyncSource;
+    protected DynamicModelSymbol dynamicModel;
     protected boolean optional = false;
-    protected Map<String, String> asyncMapping;
     protected String packageName;
+    protected String fullTypeName;
+    protected StopParser.FieldContext context;
 
-    public StopFieldSymbol(String name, String typeName, String packageName){
-        super(name);
+    public StopFieldSymbol(StopParser.FieldContext ctx, String typeName, String packageName){
+        super(ctx.ID().getText());
         this.typeName = typeName;
         this.packageName = packageName;
+        this.context = ctx;
+
+        if (!isReference(typeName) && !isScalar(typeName)) {
+            ParseTree p = getRootContext(ctx).getChild(0);
+            if (p != null && (p instanceof StopParser.PackageDeclarationContext)) {
+                StopParser.PackageDeclarationContext decl = (StopParser.PackageDeclarationContext) p;
+                packageName = decl.packageName().getText();
+            }
+
+            if (packageName != null) {
+                typeName = packageName + "." + typeName;
+            }
+        }
+
+        fullTypeName = typeName;
+    }
+
+    public String getSimpleTypeName(){
+        return typeName;
     }
 
     public String getTypeName(){
-        return typeName;
+        return fullTypeName;
     }
 
-    public String getFullTypeName(){
-        return typeName;
+    public void setDynamicModel(DynamicModelSymbol dynamicModelSymbol){
+        this.dynamicModel = dynamicModelSymbol;
     }
 
-    public void setAsyncSource(String asyncSource){
-        this.asyncSource = asyncSource;
-    }
-
-    public String getAsyncSource() {
-        return this.asyncSource;
-    }
-
-    public void setAsyncMapping(Map<String, String> asyncMapping){
-        this.asyncMapping = asyncMapping;
-    }
-
-    public Map<String, String> getAsyncMapping() {
-        return this.asyncMapping;
+    public DynamicModelSymbol getDynamicModel() {
+        return this.dynamicModel;
     }
 
     public void setOptional(boolean optional){
@@ -49,14 +58,18 @@ public class StopFieldSymbol extends FieldSymbol {
         return this.optional;
     }
 
-    protected String getFullModelName(String name){
-        if (!isReference(name) && (packageName!=null)){
-            return packageName + "." + name;
+    private ParserRuleContext getRootContext(ParserRuleContext ctx){
+        if (ctx.getParent() == null){
+            return ctx;
         }
-        return name;
+        return getRootContext(ctx.getParent());
     }
 
     protected boolean isReference(String name){
         return name.contains(".");
+    }
+
+    protected boolean isScalar(String name){
+        return Character.isLowerCase(name.charAt(0));
     }
 }

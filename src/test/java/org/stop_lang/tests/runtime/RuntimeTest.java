@@ -17,9 +17,7 @@ import org.stop_lang.tests.runtime.helloworld.HelloRuntime;
 import org.stop_lang.tests.runtime.helloworld.HelloRuntimeBase;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -67,6 +65,12 @@ public class RuntimeTest {
 
             @Override
             public StateInstance execute(StateInstance implementationInstance, StopRuntimeImplementationExecution<StateInstance> execution) throws StopRuntimeErrorException, StopRuntimeException {
+                if (implementationInstance.getState().getName().equalsIgnoreCase("test.models.D")){
+                    Map<String, Object> props = new HashMap<String, Object>();
+                    props.put("wow", "now");
+                    StateInstance c = new StateInstance(runtime.getRuntime().getStop().getStates().get("test.models.C"), props);
+                    return c;
+                }
                 Assert.assertEquals("now", implementationInstance.getProperties().get("wow"));
                 Assert.assertEquals("cvalue", implementationInstance.getProperties().get("cvalue"));
                 Assert.assertEquals(3, ((Collection<String>)implementationInstance.getProperties().get("dcollection")).size());

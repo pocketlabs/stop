@@ -57,13 +57,6 @@ public class  Validator {
             return null;
         }
 
-        TransitionPhase transition = new TransitionPhase(def.globals, def.scopes);
-        walker.walk(transition, tree);
-
-        if (handleErrors(transition.errors) ){
-            return null;
-        }
-
         StopPhase stop = new StopPhase(def.globals, def.scopes);
         walker.walk(stop, tree);
 
@@ -78,17 +71,17 @@ public class  Validator {
             if (symbol instanceof ModelSymbol){
                 ModelSymbol modelSymbol = (ModelSymbol)symbol;
                 String name = modelSymbol.getName();
-                if (modelSymbol.getAsync()){
-                    AsyncState asyncState = new AsyncState(name, modelSymbol.getTimeout());
+                if (modelSymbol.isAsync()){
+                    AsyncState asyncState = new AsyncState(name, modelSymbol.getTimeout().getTimeoutSeconds());
                     states.put(name, asyncState);
                 }else{
                     State.StateType type = State.StateType.SYNC;
 
-                    if (modelSymbol.getStop()){
+                    if (modelSymbol.isStop()){
                         type = State.StateType.STOP;
-                    } else if (modelSymbol.getStart()){
+                    } else if (modelSymbol.isStart()){
                         type = State.StateType.START;
-                    } else if (modelSymbol.getQueue()){
+                    } else if (modelSymbol.isQueue()){
                         type = State.StateType.QUEUE;
                     }
 
@@ -117,7 +110,7 @@ public class  Validator {
                 if (modelState instanceof AsyncState){
                     AsyncState asyncState = (AsyncState)modelState;
 
-                    String transitionName = modelSymbol.getTimeoutTransition();
+                    String transitionName = modelSymbol.getTimeout().getFullName();
                     State timeoutState = states.get(transitionName);
                     if (timeoutState != null){
                         asyncState.setTimeoutTransition(timeoutState);
@@ -125,7 +118,8 @@ public class  Validator {
                 }
 
                 TreeMap<String, State> transitions = new TreeMap<String, State>(String.CASE_INSENSITIVE_ORDER);
-                for(String transitionName : modelSymbol.getTransitions()){
+                for(TransitionSymbol transitionSymbol : modelSymbol.getTransitions()){
+                    String transitionName = transitionSymbol.getName();
                     State transitionState = states.get(transitionName);
                     if (transitionState != null){
                         transitions.put(transitionName, transitionState);
@@ -134,7 +128,8 @@ public class  Validator {
                 modelState.setTransitions(transitions);
 
                 TreeMap<String, State> enqueues = new TreeMap<String, State>(String.CASE_INSENSITIVE_ORDER);
-                for(String enqueueName : modelSymbol.getEnqueues()){
+                for(EnqueueSymbol enqueueSymbol : modelSymbol.getEnqueues()){
+                    String enqueueName = enqueueSymbol.getName();
                     State enqueueState = states.get(enqueueName);
                     if (enqueueState != null){
                         enqueues.put(enqueueName, enqueueState);
@@ -143,14 +138,15 @@ public class  Validator {
                 modelState.setEnqueues(enqueues);
 
                 TreeMap<String, State> errors = new TreeMap<String, State>(String.CASE_INSENSITIVE_ORDER);
-                for(String errorTransitionName : modelSymbol.getErrorTypes()) {
+                for(ThrowSymbol throwSymbol : modelSymbol.getErrors()) {
+                    String errorTransitionName = throwSymbol.getName();
                     State errorState = states.get(errorTransitionName);
                     if (errorState!=null){
                         errors.put(errorTransitionName, errorState);
                     }
                 }
-                if (modelSymbol.getTimeoutTransition() != null){
-                    String timeoutTransitionName = modelSymbol.getTimeoutTransition();
+                if (modelSymbol.getTimeout() != null){
+                    String timeoutTransitionName = modelSymbol.getTimeout().getFullName();
                     State errorState = states.get(timeoutTransitionName);
                     if (errorState!=null){
                         errors.put(timeoutTransitionName, errorState);
@@ -168,9 +164,9 @@ public class  Validator {
                 }
                 modelState.setEnumerations(enumerations);
 
-                if (modelSymbol.getReturnType()!= null){
+                if (modelSymbol.getReturn()!= null){
                     Property.PropertyType returnPropertyType;
-                    String returnTypeString = modelSymbol.getReturnType().toString();
+                    String returnTypeString = modelSymbol.getReturn().getName();
                     State returnState = null;
                     try {
                         returnPropertyType = Property.PropertyType.valueOf(returnTypeString.toUpperCase());
@@ -179,7 +175,7 @@ public class  Validator {
                         returnState = states.get(returnTypeString);
                     }
 
-                    modelState.setReturn(returnPropertyType, returnState, modelSymbol.isReturnCollection());
+                    modelState.setReturn(returnPropertyType, returnState, modelSymbol.getReturn().isCollection());
                 }
 
                 TreeMap<String, Property> properties = new TreeMap<String, Property>(String.CASE_INSENSITIVE_ORDER);
@@ -191,19 +187,19 @@ public class  Validator {
                         State provider = null;
                         Map<String, String> providerMapping = null;
                         boolean optional = stopFieldSymbol.isOptional();
-                        if ( stopFieldSymbol.getAsyncSource() != null){
-                            provider = states.get(stopFieldSymbol.getAsyncSource());
-
+                        if ( stopFieldSymbol.getDynamicModel() != null){
+                            provider = states.get(stopFieldSymbol.getDynamicModel().getName());
+                            providerMapping = stopFieldSymbol.getDynamicModel().getSourceMapping();
                         }
                         if(childSymbol instanceof ModelFieldSymbol) {
-                            String fullName = stopFieldSymbol.getFullTypeName();
+                            String fullName = stopFieldSymbol.getTypeName();
                             State fieldState = states.get(fullName);
                             if (fieldState != null) {
-                                property = new StateProperty(symbolName, fieldState, false, provider, optional, ((ModelFieldSymbol)childSymbol).getAsyncMapping());
+                                property = new StateProperty(symbolName, fieldState, false, provider, optional, providerMapping);
                             }
-                            Enumeration enumeration = enumerations.get(stopFieldSymbol.getTypeName());
+                            Enumeration enumeration = enumerations.get(stopFieldSymbol.getSimpleTypeName());
                             if( enumeration==null){
-                                enumeration = enumerations.get(stopFieldSymbol.getFullTypeName());
+                                enumeration = enumerations.get(stopFieldSymbol.getTypeName());
                             }
                             if (enumeration == null){
                                 enumeration = enums.get(fullName);
@@ -215,16 +211,16 @@ public class  Validator {
                             CollectionFieldSymbol collectionFieldSymbol = (CollectionFieldSymbol)childSymbol;
                             Property.PropertyType propertyType;
                             if (collectionFieldSymbol.isState()){
-                                String typeName = collectionFieldSymbol.getFullTypeName();
+                                String typeName = collectionFieldSymbol.getTypeName();
                                 State fieldState = states.get(typeName);
-                                property = new StateProperty(symbolName, fieldState, true, provider, optional, collectionFieldSymbol.getAsyncMapping());
+                                property = new StateProperty(symbolName, fieldState, true, provider, optional, providerMapping);
                             }else {
                                 Enumeration enumeration = enumerations.get(collectionFieldSymbol.getTypeName());
                                 if(enumeration!=null){
                                     property = new EnumerationProperty(symbolName, enumeration, false, provider, optional);
                                 }else {
                                     propertyType = getPropertyType(collectionFieldSymbol.getTypeName());
-                                    property = new Property(symbolName, propertyType, true, provider, optional, collectionFieldSymbol.getAsyncMapping());
+                                    property = new Property(symbolName, propertyType, true, provider, optional, providerMapping);
                                 }
                             }
                         }else if (childSymbol instanceof ScalarFieldSymbol){
@@ -232,7 +228,7 @@ public class  Validator {
                             Property.PropertyType propertyType = getPropertyType(scalarFieldSymbol.getTypeName());
 
                             if(propertyType!=null){
-                                property = new Property(symbolName, propertyType, false, provider, optional, scalarFieldSymbol.getAsyncMapping());
+                                property = new Property(symbolName, propertyType, false, provider, optional, providerMapping);
                             }
                         }
                         if (property!=null){

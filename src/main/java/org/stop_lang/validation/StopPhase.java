@@ -6,10 +6,15 @@ import org.antlr.symtab.Symbol;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.stop_lang.parser.StopBaseListener;
 import org.stop_lang.parser.StopParser;
+import org.stop_lang.symbols.EnqueueSymbol;
 import org.stop_lang.symbols.ModelSymbol;
+import org.stop_lang.symbols.ThrowSymbol;
+import org.stop_lang.symbols.TransitionSymbol;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StopPhase extends StopBaseListener {
     ParseTreeProperty<Scope> scopes;
@@ -40,48 +45,63 @@ public class StopPhase extends StopBaseListener {
     }
 
     @Override public void exitTransition(StopParser.TransitionContext ctx) {
-        String modelName = ctx.model_type().getText();
-        Symbol symbol = globalsResolveWithPackage(modelName);
-        if(symbol != null) {
-            if (symbol instanceof ModelSymbol){
-                ModelSymbol modelSymbol = (ModelSymbol) symbol;
-                boolean valid = findStop(modelSymbol);
-                if (!valid){
-                    errors.add(new StopValidationException("Couldn't define transition \""+
-                            modelName +"\" because a stopping state could not be reached"));
+        TransitionSymbol transitionSymbol = ((ModelSymbol)currentScope).getTransition(ctx);
+        if(transitionSymbol == null){
+            errors.add(new StopValidationException("Couldn't validate transition because it was not defined"));
+        }else {
+            String modelName = transitionSymbol.getName();
+            Symbol symbol = globals.resolve(modelName);
+            if (symbol != null) {
+                if (symbol instanceof ModelSymbol) {
+                    ModelSymbol modelSymbol = (ModelSymbol) symbol;
+                    boolean valid = findStop(modelSymbol);
+                    if (!valid) {
+                        errors.add(new StopValidationException("Couldn't define transition \"" +
+                                modelName + "\" because a stopping state could not be reached"));
+                    }
                 }
+            } else {
+                errors.add(new StopValidationException("Couldn't define transition because " + modelName + " isn't defined"));
             }
-        }else{
-            errors.add(new StopValidationException("Couldn't define transition because " + modelName + " isn't defined"));
         }
     }
 
     @Override public void exitEnqueue(StopParser.EnqueueContext ctx) {
-        String modelName = ctx.model_type().getText();
-        Symbol symbol = globalsResolveWithPackage(modelName);
-        if(symbol != null) {
-            if (symbol instanceof ModelSymbol){
-                ModelSymbol modelSymbol = (ModelSymbol) symbol;
-                boolean valid = findStop(modelSymbol);
-                if (!valid){
-                    errors.add(new StopValidationException("Couldn't define enqueue \""+
-                            modelName +"\" because a stopping state could not be reached"));
+        EnqueueSymbol enqueueSymbol = ((ModelSymbol)currentScope).getEnqueue(ctx);
+        if(enqueueSymbol == null){
+            errors.add(new StopValidationException("Couldn't define enqueue because it was not defined"));
+        }else {
+            String modelName = enqueueSymbol.getName();
+            Symbol symbol = globals.resolve(modelName);
+            if (symbol != null) {
+                if (symbol instanceof ModelSymbol) {
+                    ModelSymbol modelSymbol = (ModelSymbol) symbol;
+                    boolean valid = findStop(modelSymbol);
+                    if (!valid) {
+                        errors.add(new StopValidationException("Couldn't define enqueue \"" +
+                                modelName + "\" because a stopping state could not be reached"));
+                    }
                 }
+            } else {
+                errors.add(new StopValidationException("Couldn't define enqueue because " + modelName + " isn't defined"));
             }
-        }else{
-            errors.add(new StopValidationException("Couldn't define enqueue because " + modelName + " isn't defined"));
         }
     }
 
     private boolean findStop(ModelSymbol modelSymbol){
-        if (modelSymbol.getStop()){
+        if (modelSymbol.isStop()){
             return true;
         }
 
-        List<String> transitions = modelSymbol.getTransitions();
-        transitions.addAll(modelSymbol.getErrorTypes());
-        if(modelSymbol.getTimeoutTransition()!=null){
-            transitions.add(modelSymbol.getTimeoutTransition());
+        Set<String> transitions = new HashSet<>();
+        for (TransitionSymbol transitionSymbol : modelSymbol.getTransitions()){
+            transitions.add(transitionSymbol.getName());
+        }
+        for (ThrowSymbol throwSymbol : modelSymbol.getErrors()) {
+            transitions.add(throwSymbol.getName());
+        }
+        if(modelSymbol.getTimeout()!=null){
+            transitions.add(modelSymbol.getTimeout().getName());
         }
 
         if (modelSymbol.getTransitions().isEmpty()){
@@ -91,7 +111,7 @@ public class StopPhase extends StopBaseListener {
         boolean foundStop = true;
 
         for (String transition : transitions){
-            Symbol symbol = globalsResolveWithPackage(transition);
+            Symbol symbol = globals.resolve(transition);
             if(symbol != null) {
                 if (symbol instanceof ModelSymbol){
                     ModelSymbol transitionModelSymbol = (ModelSymbol) symbol;
@@ -107,20 +127,5 @@ public class StopPhase extends StopBaseListener {
         }
 
         return foundStop;
-    }
-
-    private Symbol globalsResolveWithPackage(String name){
-        return globals.resolve(getFullModelName(name));
-    }
-
-    private String getFullModelName(String name){
-        if (!isReference(name) && (packageName!=null)){
-            return packageName + "." + name;
-        }
-        return name;
-    }
-
-    private boolean isReference(String name){
-        return name.contains(".");
     }
 }

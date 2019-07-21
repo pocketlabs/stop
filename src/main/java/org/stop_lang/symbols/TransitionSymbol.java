@@ -38,10 +38,6 @@ public class TransitionSymbol  extends SymbolWithScope {
         return fullName;
     }
 
-    public String getPackageName(){
-        return packageName;
-    }
-
     public StopParser.TransitionContext getContext(){
         return ctx;
     }

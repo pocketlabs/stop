@@ -88,6 +88,27 @@ public class StopPhase extends StopBaseListener {
         }
     }
 
+    @Override public void exitThrow_parameter(StopParser.Throw_parameterContext ctx) {
+        ThrowSymbol throwSymbol = ((ModelSymbol)currentScope).getError(ctx);
+        if(throwSymbol == null){
+            errors.add(new StopValidationException("Couldn't define error because it was not defined"));
+        }else {
+            String modelName = throwSymbol.getName();
+            Symbol modelSymbol = globals.resolve(modelName);
+            if (modelSymbol == null) {
+                errors.add(new StopValidationException("Couldn't define thrown transition because "
+                        + modelName + " isn't defined"));
+            }else {
+                ModelSymbol throwModelSymbol = (ModelSymbol)modelSymbol;
+                boolean valid = findStop(throwModelSymbol);
+                if (!valid) {
+                    errors.add(new StopValidationException("Couldn't define error \"" +
+                            modelName + "\" because a stopping state could not be reached"));
+                }
+            }
+        }
+    }
+
     private boolean findStop(ModelSymbol modelSymbol){
         if (modelSymbol.isStop()){
             return true;

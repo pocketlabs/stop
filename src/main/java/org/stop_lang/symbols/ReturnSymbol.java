@@ -54,10 +54,6 @@ public class ReturnSymbol extends SymbolWithScope {
         return fullName;
     }
 
-    public String getPackageName(){
-        return packageName;
-    }
-
     public boolean isCollection(){
         return ctx.return_type().collection() != null;
     }

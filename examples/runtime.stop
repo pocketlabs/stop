@@ -55,7 +55,11 @@ async GetFilteredPosts <- [Post] throws DatabaseError {
     timeout 10 -> GetFilteredPostsTimeoutError
 }
 
-stop DatabaseError {
+DatabaseError {
+    -> LogDatabaseError
+}
+
+stop LogDatabaseError {
 
 }
 

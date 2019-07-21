@@ -53,10 +53,6 @@ public class DynamicModelSymbol extends SymbolWithScope {
         return fullName;
     }
 
-    public String getPackageName(){
-        return packageName;
-    }
-
     public Map<String, String> getSourceMapping(){
         return sourceMapping;
     }

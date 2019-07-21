@@ -58,10 +58,6 @@ public class ModelSymbol extends SymbolWithScope {
         return fullName;
     }
 
-    public String getPackageName(){
-        return packageName;
-    }
-
     public boolean isAsync(){
         return async;
     }
@@ -91,7 +87,8 @@ public class ModelSymbol extends SymbolWithScope {
         return errors.get(ctx);
     }
 
-    public void addTransition(TransitionSymbol transition){
+    public void addTransition(TransitionSymbol transition)
+    {
         transitions.put(transition.getContext(), transition);
     }
 

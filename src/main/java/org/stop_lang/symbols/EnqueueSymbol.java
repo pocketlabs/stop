@@ -40,10 +40,6 @@ public class EnqueueSymbol extends SymbolWithScope {
         return fullName;
     }
 
-    public String getPackageName(){
-        return packageName;
-    }
-
     public StopParser.EnqueueContext getContext(){
         return ctx;
     }

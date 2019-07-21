@@ -38,10 +38,6 @@ public class ThrowSymbol extends SymbolWithScope {
         return fullName;
     }
 
-    public String getPackageName(){
-        return packageName;
-    }
-
     public StopParser.Throw_parameterContext getContext(){
         return ctx;
     }

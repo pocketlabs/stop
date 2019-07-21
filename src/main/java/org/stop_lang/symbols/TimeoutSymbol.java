@@ -37,14 +37,6 @@ public class TimeoutSymbol  extends SymbolWithScope {
         return fullName;
     }
 
-    public String getPackageName(){
-        return packageName;
-    }
-
-    public StopParser.TimeoutContext getContext(){
-        return ctx;
-    }
-
     public Integer getTimeoutSeconds(){
         return seconds;
     }

@@ -67,7 +67,7 @@ public class RefPhase extends StopBaseListener {
             CollectionFieldSymbol collectionFieldSymbol = (CollectionFieldSymbol)symbol;
             String modelName = collectionFieldSymbol.getTypeName();
             Symbol modelSymbol = globals.resolve(modelName);
-            Symbol enumSymbol = currentScope.resolve(collectionFieldSymbol.getTypeName());
+            Symbol enumSymbol = currentScope.resolve(collectionFieldSymbol.getSimpleTypeName());
             if (collectionFieldSymbol.isState() && (modelSymbol == null)) {
                 if ((enumSymbol != null) && (enumSymbol instanceof EnumSymbol)) {
                     // Found symbol

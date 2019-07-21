@@ -140,3 +140,12 @@ stop PublishPushNotification {
     string message
     [string] recipients
 }
+
+MultipleEnumTest {
+    enum TestEnum {
+        ONE
+        TWO
+        THREE
+    }
+    [TestEnum] tests
+}

@@ -18,4 +18,14 @@ public class StateProperty extends Property {
     protected Class getClassForPropertyType(Property.PropertyType propertyType){
         return StateInstance.class;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if (o instanceof StateProperty){
+            StateProperty otherProperty = (StateProperty) o;
+            StateProperty thisProperty = this;
+            return thisProperty.getState().equals(otherProperty.getState()) && otherProperty.getName().equalsIgnoreCase(getName()) && otherProperty.getType().equals(getType());
+        }
+        return false;
+    }
 }

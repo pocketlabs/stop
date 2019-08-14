@@ -16,11 +16,27 @@ GetC <- C {
 D {
     string five
     string six
+    E e <- GetE(e: five)
 }
 
 GetD <- D {
     string seven
     optional string eight
+}
+
+E {
+    string e
+    F f <- GetF
+}
+
+GetE <- E {
+}
+
+F {
+    string f
+}
+
+GetF <- F {
 }
 
 stop B {

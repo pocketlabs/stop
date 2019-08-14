@@ -2,9 +2,8 @@ package org.stop_lang.tests.runtime;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import org.stop_lang.models.*;
 import org.stop_lang.models.Enumeration;
-import org.stop_lang.models.EnumerationInstance;
-import org.stop_lang.models.StateInstance;
 import org.stop_lang.runtime.StopRuntimeErrorException;
 import org.stop_lang.runtime.StopRuntimeException;
 import org.stop_lang.runtime.StopRuntimeImplementation;
@@ -16,6 +15,7 @@ import org.stop_lang.tests.runtime.enums.EnumRuntimeBase;
 import org.stop_lang.tests.runtime.helloworld.HelloRuntime;
 import org.stop_lang.tests.runtime.helloworld.HelloRuntimeBase;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -186,5 +186,32 @@ public class RuntimeTest {
         startInstance.put("f", ei);
         EnumRuntimeBase stop = runtime.getRuntime().start(startInstance);
         Assert.assertNotNull(stop);
+    }
+
+    @Test
+    public void getOrderedPropertiesForState() throws IOException {
+        HelloRuntime runtime = new HelloRuntime();
+        State b = runtime.getRuntime().getStop().getStates().get("B");
+        List<Property> properties = runtime.getRuntime().getOrderedDynamicPropertiesForState(b);
+        Assert.assertEquals(properties.size(), 9);
+        int aj = -1;
+        int n = -1;
+        int h = -1;
+        int i = 0;
+        for (Property p : properties){
+            Assert.assertNotNull(p.getProvider());
+            if (p.getName().equalsIgnoreCase("aj")){
+                aj = i;
+            }
+            if (p.getName().equalsIgnoreCase("n")){
+                n = i;
+            }
+            if (p.getName().equalsIgnoreCase("h")){
+                h = i;
+            }
+            i++;
+        }
+        Assert.assertTrue(aj < n);
+        Assert.assertTrue(h < aj);
     }
 }

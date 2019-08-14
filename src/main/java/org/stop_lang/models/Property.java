@@ -157,4 +157,13 @@ public class Property {
     public Map<String, String> getProviderMapping(){
         return this.providerMapping;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if (o instanceof Property){
+            Property otherProperty = (Property) o;
+            return otherProperty.getName().equalsIgnoreCase(getName()) && otherProperty.getType().equals(getType());
+        }
+        return false;
+    }
 }

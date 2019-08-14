@@ -136,7 +136,7 @@ public class State {
     public boolean equals(Object o){
         if (o instanceof State){
             State otherState = (State)o;
-            return otherState.getName().equalsIgnoreCase(getName());
+            return otherState.getName().equalsIgnoreCase(getName()) && otherState.getType().equals(getType());
         }
         return false;
     }

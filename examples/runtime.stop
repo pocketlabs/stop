@@ -79,6 +79,8 @@ stop GetTimedOutPostsError {
 }
 
 B {
+    optional string n <- GetN(k: aj.k)
+    J aj <- GetJ(m: h)
     string test2
     string dynamicText <- GetDynamicText
     [Post] posts <- GetPosts
@@ -88,8 +90,8 @@ B {
     optional string again <- CombineAgain
     D d
     H h <- GetH(one: d.e.f.name, two: d.e.g.uuid)
-    J aj <- GetJ(m: h)
-    optional string n <- GetN(k: aj.k)
+    optional string page_permalink
+    optional Page page <- GetPageWithPermalink(permalink: page_permalink)
     -> C
 }
 
@@ -165,4 +167,31 @@ Iso {
 
 start IncludeTest {
     -> test.models.D
+}
+
+Page {
+    string uuid
+    string title
+}
+
+Permalink {
+    string page_uuid
+    string permalink
+}
+
+async GetPermalink <- Permalink {
+    string permalink
+    timeout 30 -> TimeoutError
+}
+
+async GetPage <- Page {
+    string uuid
+    timeout 30 -> TimeoutError
+}
+
+async GetPageWithPermalink <- Page {
+    string permalink
+    Permalink permalink_object <- GetPermalink(permalink: permalink)
+    Page page <- GetPage(uuid: permalink_object.page_uuid)
+    timeout 30 -> TimeoutError
 }

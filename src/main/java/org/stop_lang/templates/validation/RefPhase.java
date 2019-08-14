@@ -47,9 +47,26 @@ public class RefPhase extends StopTemplatesBaseListener {
         currentScope = globals;
     }
 
+    private State getComponent(String componentName){
+        State componentState = stop.getStates().get(componentName);
+        if (componentState==null){
+            for (State state : stop.getStates().values()){
+                String name = state.getName();
+                if (name.contains(".")){
+                    String[] simpleNameParts = name.split("\\.");
+                    name = simpleNameParts[simpleNameParts.length-1];
+                }
+                if (name.equalsIgnoreCase(componentName)){
+                    return state;
+                }
+            }
+        }
+        return componentState;
+    }
+
     @Override public void enterComponent(StopTemplatesParser.ComponentContext ctx) {
         String componentName = ctx.COMPONENT_TYPE().getText();
-        State componentState = stop.getStates().get(componentName);
+        State componentState = getComponent(componentName);
         if (componentState == null){
             errors.add(new StopTemplateValidationException("No component state " + componentName + " found within stop file"));
         }
@@ -236,7 +253,7 @@ public class RefPhase extends StopTemplatesBaseListener {
         if( currentScope instanceof ComponentSymbol) {
             ComponentSymbol componentSymbol = (ComponentSymbol) currentScope;
             String componentName = componentSymbol.getName();
-            State componentState = stop.getStates().get(componentName);
+            State componentState = getComponent(componentName);
             if (componentState == null){
                 errors.add(new StopTemplateValidationException("No component state " + componentName + " found within stop file"));
             }else{

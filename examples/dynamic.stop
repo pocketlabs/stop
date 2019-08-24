@@ -42,6 +42,14 @@ GetH <- string {
     string g
 }
 
+J {
+    string name
+}
+
+GetJ <- [J] {
+    string d
+}
+
 GetE <- E {
     string d
     optional string w
@@ -55,4 +63,5 @@ stop End {
     string c <- GetC
     optional string d <- GetD
     optional E e <- GetE
+    [J] j <- GetJ(d: v)
 }

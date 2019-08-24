@@ -75,11 +75,22 @@ public class DynamicRuntime implements StopRuntimeImplementation<DynamicRuntimeB
         if (implementationInstance.getName().equalsIgnoreCase("GetH")){
             return "GetH";
         }
+
         return null;
     }
 
     @Override
     public Collection executeAndReturnCollection(DynamicRuntimeBase implementationInstance, StopRuntimeImplementationExecution<DynamicRuntimeBase> execution) throws StopRuntimeErrorException, StopRuntimeException {
+        if (implementationInstance.getName().equalsIgnoreCase("GetJ")){
+            int n = 10;
+            List<DynamicRuntimeBase> js = new ArrayList<>();
+            for (int i = 0; i < n; i++){
+                DynamicRuntimeBase f = new DynamicRuntimeBase("J");
+                f.put("name", "boo");
+                js.add(f);
+            }
+            return js;
+        }
         return null;
     }
 

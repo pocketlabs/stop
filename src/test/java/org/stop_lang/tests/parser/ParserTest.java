@@ -1,8 +1,12 @@
 package org.stop_lang.tests.parser;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import org.stop_lang.validation.IncludePhase;
 import org.stop_lang.validation.StopValidationException;
 import org.stop_lang.validation.Validator;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -25,5 +29,12 @@ public class ParserTest {
         assertEquals(Validator.validate("./examples/errors/include.stop"), false);
         assertEquals(Validator.validate("./examples/errors/timeouts.stop"), false);
         assertEquals(Validator.validate("./examples/errors/refs.stop"), false);
+    }
+
+    @Test
+    void includeTest(){
+        List<String> paths = IncludePhase.getIncludePaths();
+        Assert.assertTrue(paths.size() > 1);
+        Assert.assertEquals(paths.get(0), "./src/main/resources");
     }
 }

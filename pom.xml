@@ -6,7 +6,7 @@
 
     <groupId>org.stop_lang</groupId>
     <artifactId>Stop</artifactId>
-    <version>1.0.12</version>
+    <version>1.0.13</version>
 
     <distributionManagement>
         <repository>

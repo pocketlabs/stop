@@ -1,6 +1,6 @@
 package test
 
-include "./examples/package-include.stop"
+include "package-include.stop"
 
 start A {
     string path

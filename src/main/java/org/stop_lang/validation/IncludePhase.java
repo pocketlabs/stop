@@ -56,7 +56,6 @@ public class IncludePhase extends StopBaseListener {
             CharStream input = CharStreams.fromFileName(filename);
             return input;
         } catch (IOException e) {
-            e.printStackTrace();
         }
 
         for(String path : getIncludePaths()) {
@@ -65,7 +64,6 @@ public class IncludePhase extends StopBaseListener {
                 CharStream input = CharStreams.fromFileName(f);
                 return input;
             } catch (IOException e) {
-                e.printStackTrace();
             }
         }
 

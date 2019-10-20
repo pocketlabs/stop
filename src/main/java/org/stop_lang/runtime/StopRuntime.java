@@ -253,6 +253,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
                         int depIndex = orderedProperties.indexOf(propertyDependency);
                         if (depIndex>=index) {
                             orderedProperties.remove(propertyDependency);
+                            index = orderedProperties.indexOf(property);
                             orderedProperties.add(index, propertyDependency);
                         }
                     }else {

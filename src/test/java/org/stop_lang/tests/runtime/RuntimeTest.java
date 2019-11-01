@@ -175,6 +175,41 @@ public class RuntimeTest {
             Assert.assertEquals(f.getProperty("g"), "g");
             Assert.assertEquals(f.getProperty("h"), "GetH");
         }
+        String optionalTest = (String)stop.get("optional_test");
+        Assert.assertNotNull(optionalTest);
+        Assert.assertEquals("OptionalGetTestAlphaOne_null_OptionalGetTestAlphaTwo_null_null", optionalTest);
+    }
+
+    @Test
+    public void dynamicOptionals() throws Exception {
+        DynamicRuntime runtime = new DynamicRuntime();
+        DynamicRuntimeBase startInstance = new DynamicRuntimeBase("Begin");
+        startInstance.put("v", "test v");
+        startInstance.put("w", "optional w");
+        DynamicRuntimeBase stop = runtime.getRuntime().start(startInstance);
+        Assert.assertNotNull(stop);
+        Assert.assertNotNull(runtime.getRuntime().getStop());
+        Assert.assertEquals("End", stop.getName());
+        Assert.assertNotNull(stop.get("v"));
+        Assert.assertNotNull(stop.get("w"));
+        Assert.assertNotNull(stop.get("a"));
+        Assert.assertEquals("GetA", stop.get("a"));
+        Assert.assertNotNull(stop.get("b"));
+        Assert.assertEquals("GetB", stop.get("b"));
+        Assert.assertNotNull(stop.get("c"));
+        Assert.assertEquals("GetC", stop.get("c"));
+        Assert.assertNotNull(stop.get("d"));
+        Assert.assertEquals("GetD", stop.get("d"));
+        Assert.assertNotNull(stop.get("e"));
+        StateInstance e = (StateInstance)stop.get("e");
+        Assert.assertNotNull(e.getProperties().get("f"));
+        for (StateInstance f : (List<StateInstance>)e.getProperties().get("f")){
+            Assert.assertEquals(f.getProperty("g"), "g");
+            Assert.assertEquals(f.getProperty("h"), "GetH");
+        }
+        String optionalTest = (String)stop.get("optional_test");
+        Assert.assertNotNull(optionalTest);
+        Assert.assertEquals("OptionalGetTestAlphaOne_optional w_OptionalGetTestAlphaTwo_optional w_OptionalGetTestAlphaThree", optionalTest);
     }
 
     @Test

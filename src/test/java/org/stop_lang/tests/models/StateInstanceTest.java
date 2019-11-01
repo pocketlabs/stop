@@ -142,7 +142,6 @@ public class StateInstanceTest {
             Assert.fail();
         }catch(StopValidationException validationException){
             // Good
-            validationException.printStackTrace();
         }
     }
 }

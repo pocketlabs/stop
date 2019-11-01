@@ -75,6 +75,15 @@ public class DynamicRuntime implements StopRuntimeImplementation<DynamicRuntimeB
         if (implementationInstance.getName().equalsIgnoreCase("GetH")){
             return "GetH";
         }
+        if (implementationInstance.getName().equalsIgnoreCase("OptionalGetTestAlphaOne")){
+            return "OptionalGetTestAlphaOne_" + implementationInstance.get("w") + "_" + implementationInstance.get("n");
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("OptionalGetTestAlphaTwo")){
+            return "OptionalGetTestAlphaTwo" +"_" + implementationInstance.get("w") + "_" + implementationInstance.get("o") ;
+        }
+        if (implementationInstance.getName().equalsIgnoreCase("OptionalGetTestAlphaThree")){
+            return "OptionalGetTestAlphaThree";
+        }
 
         return null;
     }

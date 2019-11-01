@@ -326,9 +326,11 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
 
                             if (providerState.getReturnState() != null) {
                                 List<StateInstance> stateInstances = new ArrayList<StateInstance>();
-                                for (Object collectionElement : collection) {
-                                    StateInstance si = implementation.buildStateInstance((T) collectionElement);
-                                    stateInstances.add(si);
+                                if (collection!=null) {
+                                    for (Object collectionElement : collection) {
+                                        StateInstance si = implementation.buildStateInstance((T) collectionElement);
+                                        stateInstances.add(si);
+                                    }
                                 }
                                 value = stateInstances;
                             } else {
@@ -482,9 +484,7 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
             Property providerStatePropertyEntryProperty = providerStatePropertyEntry.getValue();
             if (providerStatePropertyEntryProperty!= null){
                 if (providerStatePropertyEntryProperty.getProvider()!=null){
-                    if (providerStatePropertyEntryProperty.getProvider().getProperties().isEmpty()){
-                        continue;
-                    }
+                    continue;
                 }
             }
             String propertyName = providerStatePropertyEntry.getKey();
@@ -501,7 +501,9 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
             }
             Property stateProperty = stateInstance.getState().getProperties().get(propertyName);
             if (stateProperty != null){
-                if (!providerStatePropertyEntryProperty.isOptional() && (stateInstance.getProperties().get(propertyName)==null)){
+                if ((stateProperty.getProvider()==null)
+                        && !providerStatePropertyEntryProperty.isOptional()
+                        && (stateInstance.getProperties().get(propertyName)==null)){
                     return false;
                 }
             }else{
@@ -510,6 +512,8 @@ public class StopRuntime<T> implements StopRuntimeImplementationExecution<T> {
         }
         return true;
     }
+
+
 
     private T executeWithPackageImplementations(T implementationInstance) throws StopRuntimeErrorException, StopRuntimeException{
         if (!packageImplementations.isEmpty()){

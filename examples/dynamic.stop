@@ -55,6 +55,21 @@ GetE <- E {
     optional string w
 }
 
+OptionalGetTestAlphaOne <- string {
+    E e
+    optional string w
+    optional string n <- OptionalGetTestAlphaTwo
+}
+
+OptionalGetTestAlphaTwo <- string {
+    optional string w
+    optional string o <- OptionalGetTestAlphaThree
+}
+
+OptionalGetTestAlphaThree <- string {
+    string w
+}
+
 stop End {
     string v
     optional string w
@@ -64,4 +79,5 @@ stop End {
     optional string d <- GetD
     optional E e <- GetE
     [J] j <- GetJ(d: v)
+    optional string optional_test <- OptionalGetTestAlphaOne
 }
